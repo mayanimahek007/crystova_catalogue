@@ -2,6 +2,117 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Gem } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+
+type Category = {
+  slug: string;
+  name: string;
+  image: string;
+};
+
+type Product = {
+  sku: string;
+  image: string;
+};
+
+const categories: Category[] = [
+  {
+    slug: "rings",
+    name: "Rings",
+    image:
+      "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop",
+  },
+  {
+    slug: "necklaces",
+    name: "Necklaces",
+    image:
+      "https://images.unsplash.com/photo-1520974044823-b88c0b4a0f64?q=80&w=1600&auto=format&fit=crop",
+  },
+  {
+    slug: "bracelets",
+    name: "Bracelets",
+    image:
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1600&auto=format&fit=crop",
+  },
+  {
+    slug: "earrings",
+    name: "Earrings",
+    image:
+      "https://images.unsplash.com/photo-1603575449236-21efc50d8f63?q=80&w=1600&auto=format&fit=crop",
+  },
+];
+
+const productsByCategory: Record<string, Product[]> = {
+  rings: [
+    {
+      sku: "RNG-CRY-001",
+      image:
+        "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1400&auto=format&fit=crop",
+    },
+    {
+      sku: "RNG-GLD-014",
+      image:
+        "https://images.unsplash.com/photo-1518544801976-3e18df9ab01f?q=80&w=1400&auto=format&fit=crop",
+    },
+    {
+      sku: "RNG-RQZ-112",
+      image:
+        "https://images.unsplash.com/photo-1520962916132-6000e8c1c1d6?q=80&w=1400&auto=format&fit=crop",
+    },
+  ],
+  necklaces: [
+    {
+      sku: "NCK-GLD-220",
+      image:
+        "https://images.unsplash.com/photo-1617038260897-3b6e22fc26a5?q=80&w=1400&auto=format&fit=crop",
+    },
+    {
+      sku: "NCK-PRL-333",
+      image:
+        "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=1400&auto=format&fit=crop",
+    },
+    {
+      sku: "NCK-CRY-908",
+      image:
+        "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1400&auto=format&fit=crop",
+    },
+  ],
+  bracelets: [
+    {
+      sku: "BRC-GLD-010",
+      image:
+        "https://images.unsplash.com/photo-1603565815872-4b0b1a4a9d8a?q=80&w=1400&auto=format&fit=crop",
+    },
+    {
+      sku: "BRC-CRY-021",
+      image:
+        "https://images.unsplash.com/photo-1611276723551-98ac5d26a254?q=80&w=1400&auto=format&fit=crop",
+    },
+    {
+      sku: "BRC-RSE-044",
+      image:
+        "https://images.unsplash.com/photo-1620000000391-25a1b7eb98c2?q=80&w=1400&auto=format&fit=crop",
+    },
+  ],
+  earrings: [
+    {
+      sku: "EAR-GLD-511",
+      image:
+        "https://images.unsplash.com/photo-1603575449236-21efc50d8f63?q=80&w=1400&auto=format&fit=crop",
+    },
+    {
+      sku: "EAR-PRL-502",
+      image:
+        "https://images.unsplash.com/photo-1609252925143-0f4c48eb2b69?q=80&w=1400&auto=format&fit=crop",
+    },
+    {
+      sku: "EAR-DMD-577",
+      image:
+        "https://images.unsplash.com/photo-1601655781321-9ec6a3a3aad0?q=80&w=1400&auto=format&fit=crop",
+    },
+  ],
+};
 
 function ArrowButton({
   direction,
@@ -75,89 +186,22 @@ function Paper({
         </motion.div>
       </AnimatePresence>
 
-      {/* soft inner vignette for luxury vibe */}
       <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-tr from-black/0 via-black/0 to-black/5" />
     </div>
   );
 }
 
 export default function Index() {
-  const pages = useMemo(
-    () => [
-      {
-        id: 1,
-        content: (
-          <div className="flex h-full flex-col items-center justify-center text-center select-none">
-            <div className="mb-4 flex items-center gap-3 text-primary">
-              <Gem className="h-7 w-7" />
-              <span className="tracking-[0.35em] text-xs uppercase text-muted-foreground">
-                Jewelry Diary
-              </span>
-            </div>
-            <h1 className="font-brand text-5xl md:text-6xl lg:text-7xl font-semibold bg-gradient-to-br from-primary to-amber-500 bg-clip-text text-transparent">
-              Crystova
-            </h1>
-            <p className="mt-4 max-w-sm text-sm md:text-base text-muted-foreground">
-              A personal log for your gems, gold, and timeless keepsakes. Keep
-              every sparkle remembered.
-            </p>
-          </div>
-        ),
-      },
-      {
-        id: 2,
-        content: (
-          <div className="h-full">
-            <div className="mb-4 flex items-center gap-3">
-              <Gem className="h-5 w-5 text-primary" />
-              <h2 className="font-brand text-2xl md:text-3xl">Collection Details</h2>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <h3 className="text-sm uppercase tracking-wide text-muted-foreground">
-                  Owner
-                </h3>
-                <p className="font-medium">Mahek Mayani</p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-sm uppercase tracking-wide text-muted-foreground">
-                  Brand
-                </h3>
-                <p className="font-medium">Crystova</p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-sm uppercase tracking-wide text-muted-foreground">
-                  Materials
-                </h3>
-                <p className="font-medium">18K Gold, Diamonds, Rose Quartz</p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-sm uppercase tracking-wide text-muted-foreground">
-                  Notes
-                </h3>
-                <p className="font-medium">
-                  Soft blush palette with warm gold accents. Maintain in a
-                  velvet case.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-6 rounded-xl border border-dashed border-border p-4">
-              <p className="text-sm text-muted-foreground">
-                Tip: Use the arrows to flip pages. More diary pages can be
-                added later for purchases, appraisals, and memories.
-              </p>
-            </div>
-          </div>
-        ),
-      },
-    ],
-    [],
-  );
-
   const [pageIndex, setPageIndex] = useState(0);
   const [dir, setDir] = useState<"next" | "prev">("next");
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+
+  const handleSelectCategory = (slug: string) => {
+    const cat = categories.find((c) => c.slug === slug) || null;
+    setSelectedCategory(cat);
+    setDir("next");
+    setPageIndex(2);
+  };
 
   const prev = () => {
     setDir("prev");
@@ -176,9 +220,129 @@ export default function Index() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  });
 
-  const pageHeight = "clamp(480px, 70vh, 640px)";
+  const pageHeight = "clamp(520px, 72vh, 680px)";
+
+  const pages = useMemo(() => {
+    const page1 = {
+      id: 1,
+      content: (
+        <div className="flex h-full flex-col items-center justify-center text-center select-none">
+          <div className="mb-4 flex items-center gap-3 text-primary">
+            <Gem className="h-7 w-7" />
+            <span className="tracking-[0.35em] text-xs uppercase text-muted-foreground">
+              Jewelry Diary
+            </span>
+          </div>
+          <h1 className="font-brand text-5xl md:text-6xl lg:text-7xl font-semibold bg-gradient-to-br from-primary to-amber-500 bg-clip-text text-transparent">
+            Crystova
+          </h1>
+          <p className="mt-4 max-w-sm text-sm md:text-base text-muted-foreground">
+            A personal log for your gems, gold, and timeless keepsakes. Keep
+            every sparkle remembered.
+          </p>
+        </div>
+      ),
+    };
+
+    const page2 = {
+      id: 2,
+      content: (
+        <div className="h-full">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Gem className="h-5 w-5 text-primary" />
+              <h2 className="font-brand text-2xl md:text-3xl">Categories</h2>
+            </div>
+            <p className="text-xs md:text-sm text-muted-foreground">
+              Tap a category to open products
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {categories.map((cat) => (
+              <button
+                key={cat.slug}
+                onClick={() => handleSelectCategory(cat.slug)}
+                className="group relative overflow-hidden rounded-xl ring-1 ring-border shadow hover:shadow-lg transition-all"
+              >
+                <div className="relative aspect-[4/3] w-full">
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent opacity-90" />
+                  <div className="absolute bottom-0 left-0 right-0 p-3">
+                    <div className="inline-flex items-center rounded-full bg-card/80 backdrop-blur px-3 py-1 text-xs ring-1 ring-border text-foreground">
+                      {cat.name}
+                    </div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      ),
+    };
+
+    const page3 = {
+      id: 3,
+      content: (
+        <div className="h-full">
+          <div className="mb-4 flex items-center gap-3">
+            <Gem className="h-5 w-5 text-primary" />
+            <h2 className="font-brand text-2xl md:text-3xl">
+              {selectedCategory ? selectedCategory.name : "Products"}
+            </h2>
+          </div>
+
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+            {(selectedCategory ? productsByCategory[selectedCategory.slug] : [])?.map(
+              (p) => (
+                <div
+                  key={p.sku}
+                  className="rounded-xl ring-1 ring-border bg-card shadow hover:shadow-lg transition-all overflow-hidden"
+                >
+                  <div className="relative aspect-square">
+                    <img
+                      src={p.image}
+                      alt={p.sku}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-black/0 via-black/0 to-black/10" />
+                  </div>
+                  <div className="p-3">
+                    <div className="text-xs text-muted-foreground">SKU</div>
+                    <div className="font-medium tracking-wide">{p.sku}</div>
+                    <div className="mt-3">
+                      <Button
+                        className="w-full"
+                        onClick={() => toast("Buy Now", { description: `SKU: ${p.sku}` })}
+                      >
+                        Buy Now
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ),
+            )}
+
+            {!selectedCategory && (
+              <div className="col-span-full flex items-center justify-center rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
+                Select a category on the previous page
+              </div>
+            )}
+          </div>
+        </div>
+      ),
+    };
+
+    return [page1, page2, page3];
+  }, [selectedCategory]);
 
   return (
     <main
@@ -191,7 +355,6 @@ export default function Index() {
         className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4"
         style={{ ["--page-h" as any]: pageHeight, perspective: 1600 }}
       >
-        {/* decorative glow */}
         <div className="pointer-events-none absolute inset-0 -z-10 opacity-40 blur-3xl">
           <div className="absolute left-10 top-20 h-40 w-40 rounded-full bg-amber-300/40" />
           <div className="absolute bottom-20 right-10 h-48 w-48 rounded-full bg-rose-300/40" />
@@ -202,7 +365,6 @@ export default function Index() {
 
           {/* Desktop: two-page spread */}
           <div className="relative hidden md:flex w-[900px] max-w-[90vw] rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 h-[var(--page-h)]">
-            {/* spine */}
             <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
 
             <Paper
@@ -221,7 +383,10 @@ export default function Index() {
           </div>
 
           {/* Mobile: single page */}
-          <div className="md:hidden w-full max-w-xl rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 p-6 h-[var(--page-h)] overflow-hidden" style={{ perspective: 1600 }}>
+          <div
+            className="md:hidden w-full max-w-xl rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 p-6 h-[var(--page-h)] overflow-hidden"
+            style={{ perspective: 1600 }}
+          >
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={`mobile-${pageIndex}-${dir}`}
