@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Gem } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
 
 function ArrowButton({
   direction,
@@ -31,9 +32,13 @@ function ArrowButton({
 function Paper({
   children,
   side,
+  k,
+  dir,
 }: {
   children: React.ReactNode;
   side: "left" | "right";
+  k: string | number;
+  dir: "next" | "prev";
 }) {
   return (
     <div
@@ -41,6 +46,7 @@ function Paper({
         "relative flex-1 overflow-hidden rounded-2xl bg-card p-6 md:p-8",
         "shadow-[inset_0_0_0_1px_hsl(var(--border)),0_30px_80px_-20px_rgba(0,0,0,0.25)]",
         side === "left" ? "rounded-r-none" : "rounded-l-none",
+        "h-[var(--page-h)]",
       )}
     >
       <div
@@ -50,7 +56,19 @@ function Paper({
             "repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.5) 29px)",
         }}
       />
-      {children}
+      <AnimatePresence mode="wait" initial={false}
+      >
+        <motion.div
+          key={k}
+          initial={{ x: dir === "next" ? 40 : -40, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: dir === "next" ? -40 : 40, opacity: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+          className="h-full"
+        >
+          <div className="h-full overflow-auto pr-1">{children}</div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
@@ -131,9 +149,18 @@ export default function Index() {
   );
 
   const [pageIndex, setPageIndex] = useState(0);
+  const [dir, setDir] = useState<"next" | "prev">("next");
 
-  const prev = () => setPageIndex((p) => Math.max(0, p - 1));
-  const next = () => setPageIndex((p) => Math.min(pages.length - 1, p + 1));
+  const prev = () => {
+    setDir("prev");
+    setPageIndex((p) => Math.max(0, p - 1));
+  };
+  const next = () => {
+    setDir("next");
+    setPageIndex((p) => Math.min(pages.length - 1, p + 1));
+  };
+
+  const pageHeight = "clamp(480px, 70vh, 640px)";
 
   return (
     <main
@@ -142,7 +169,10 @@ export default function Index() {
         "dark:from-[hsl(24_30%_7%)] dark:via-[hsl(24_22%_10%)] dark:to-[hsl(20_20%_8%)]",
       )}
     >
-      <div className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4">
+      <div
+        className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4"
+        style={{ ["--page-h" as any]: pageHeight }}
+      >
         {/* decorative glow */}
         <div className="pointer-events-none absolute inset-0 -z-10 opacity-40 blur-3xl">
           <div className="absolute left-10 top-20 h-40 w-40 rounded-full bg-amber-300/40" />
@@ -152,17 +182,40 @@ export default function Index() {
         <div className="flex items-center gap-3 md:gap-6">
           <ArrowButton direction="left" onClick={prev} disabled={pageIndex === 0} />
 
-          <div className="relative hidden md:flex w-[900px] max-w-[90vw] rounded-2xl ring-1 ring-border shadow-2xl bg-card/90">
+          {/* Desktop: two-page spread */}
+          <div className="relative hidden md:flex w-[900px] max-w-[90vw] rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 h-[var(--page-h)]">
             {/* spine */}
             <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
 
-            <Paper side="left">{pageIndex === 0 ? pages[0].content : pages[pageIndex - 1]?.content ?? pages[0].content}</Paper>
-            <Paper side="right">{pages[pageIndex].content}</Paper>
+            <Paper
+              side="left"
+              k={`left-${Math.max(0, pageIndex - 1)}`}
+              dir={dir}
+            >
+              {pageIndex === 0
+                ? pages[0].content
+                : pages[pageIndex - 1]?.content ?? pages[0].content}
+            </Paper>
+
+            <Paper side="right" k={`right-${pageIndex}`} dir={dir}>
+              {pages[pageIndex].content}
+            </Paper>
           </div>
 
           {/* Mobile: single page */}
-          <div className="md:hidden w-full max-w-xl rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 p-6">
-            {pages[pageIndex].content}
+          <div className="md:hidden w-full max-w-xl rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 p-6 h-[var(--page-h)] overflow-hidden">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={`mobile-${pageIndex}`}
+                initial={{ x: dir === "next" ? 40 : -40, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: dir === "next" ? -40 : 40, opacity: 0 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="h-full"
+              >
+                <div className="h-full overflow-auto pr-1">{pages[pageIndex].content}</div>
+              </motion.div>
+            </AnimatePresence>
           </div>
 
           <ArrowButton
