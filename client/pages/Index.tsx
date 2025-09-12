@@ -246,7 +246,6 @@ export default function Index() {
   const startFlipPrev = () => {
     if (view === 0 || flipping !== "none") return;
     setFlipDir("prev");
-    // If closing to cover from view 1, flip the whole sheet
     if (view === 1) setFlipping("single");
     else setFlipping("left");
   };
@@ -254,7 +253,6 @@ export default function Index() {
   const startFlipNext = () => {
     if (view >= 3 || flipping !== "none") return;
     setFlipDir("next");
-    // From cover to open, flip the whole sheet
     if (view === 0) setFlipping("single");
     else setFlipping("right");
   };
@@ -270,7 +268,7 @@ export default function Index() {
 
   return (
     <main className={cn("min-h-screen w-full bg-gradient-to-br from-rose-50 via-amber-50 to-rose-100", "dark:from-[hsl(24_30%_7%)] dark:via-[hsl(24_22%_10%)] dark:to-[hsl(20_20%_8%)]")}> 
-      <div className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4" style={{ ["--page-h" as any]: pageHeight, perspective: 1600 }}>
+      <div className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4" style={{ ["--page-h" as any]: "clamp(520px, 72vh, 680px)", perspective: 1600 }}>
         <div className="pointer-events-none absolute inset-0 -z-10 opacity-40 blur-3xl">
           <div className="absolute left-10 top-20 h-40 w-40 rounded-full bg-amber-300/40" />
           <div className="absolute bottom-20 right-10 h-48 w-48 rounded-full bg-rose-300/40" />
@@ -280,9 +278,11 @@ export default function Index() {
           <ArrowButton direction="left" onClick={startFlipPrev} disabled={view === 0 || flipping !== "none"} />
 
           <div className="relative hidden md:flex w-[900px] max-w-[90vw] rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 h-[var(--page-h)]">
-            {!isCover && <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />}
+            {! (view === 0) && (
+              <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
+            )}
 
-            {isCover ? (
+            {view === 0 ? (
               <PageShell side="right" full>{rightContentFor(view)}</PageShell>
             ) : (
               <>
@@ -291,9 +291,35 @@ export default function Index() {
               </>
             )}
 
-            {flipping && flipping !== "none" && (
+            {flipping === "right" && (
               <FlipOverlay
-                side={isCover || flipping === "single" ? "single" : flipping}
+                side="right"
+                dir={flipDir}
+                front={rightContentFor(view)}
+                back={rightContentFor(clamp(view + 1))}
+                onComplete={() => {
+                  setView((v) => clamp(v + 1));
+                  setFlipping("none");
+                }}
+              />
+            )}
+
+            {flipping === "left" && (
+              <FlipOverlay
+                side="left"
+                dir={flipDir}
+                front={leftContentFor(clamp(view - 1))}
+                back={leftContentFor(view)}
+                onComplete={() => {
+                  setView((v) => clamp(v - 1));
+                  setFlipping("none");
+                }}
+              />
+            )}
+
+            {flipping === "single" && (
+              <FlipOverlay
+                side="single"
                 dir={flipDir}
                 front={rightContentFor(view)}
                 back={rightContentFor(clamp(view + (flipDir === "next" ? 1 : -1)))}
