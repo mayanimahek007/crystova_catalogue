@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Gem } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -140,21 +140,7 @@ function ArrowButton({
   );
 }
 
-function Paper({
-  children,
-  side,
-  k,
-  dir,
-}: {
-  children: React.ReactNode;
-  side: "left" | "right";
-  k: string | number;
-  dir: "next" | "prev";
-}) {
-  const origin = side === "right" ? "left center" : "right center";
-  const initialRot = dir === "next" ? (side === "right" ? 90 : -10) : (side === "right" ? 10 : -90);
-  const exitRot = dir === "next" ? (side === "right" ? -90 : 10) : (side === "right" ? -10 : 90);
-
+function Paper({ children, side }: { children: React.ReactNode; side: "left" | "right" }) {
   return (
     <div
       className={cn(
@@ -172,55 +158,124 @@ function Paper({
             "repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.5) 29px)",
         }}
       />
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={k}
-          initial={{ rotateY: initialRot, opacity: 0.9 }}
-          animate={{ rotateY: 0, opacity: 1 }}
-          exit={{ rotateY: exitRot, opacity: 0.85 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          style={{ transformOrigin: origin, backfaceVisibility: "hidden" }}
-          className="h-full"
-        >
-          <div className="h-full overflow-auto pr-1">{children}</div>
-        </motion.div>
-      </AnimatePresence>
-
+      <div className="h-full overflow-auto pr-1">{children}</div>
       <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-tr from-black/0 via-black/0 to-black/5" />
+    </div>
+  );
+}
+
+function FlipOverlay({
+  side,
+  front,
+  back,
+  dir,
+  onComplete,
+}: {
+  side: "left" | "right" | "single";
+  front: React.ReactNode;
+  back: React.ReactNode;
+  dir: "next" | "prev";
+  onComplete: () => void;
+}) {
+  const isRight = side === "right";
+  const isLeft = side === "left";
+  const isSingle = side === "single";
+  const origin = isRight ? "left center" : isLeft ? "right center" : dir === "next" ? "left center" : "right center";
+  const initial = 0;
+  const exit = isRight || (isSingle && dir === "next") ? -180 : 180;
+
+  return (
+    <div
+      className={cn(
+        "absolute inset-y-0 z-20",
+        isRight && "left-1/2 w-1/2",
+        isLeft && "right-1/2 w-1/2",
+        isSingle && "left-0 right-0",
+      )}
+      style={{
+        perspective: 1600,
+      }}
+    >
+      <motion.div
+        initial={{ rotateY: initial, boxShadow: "0 20px 60px rgba(0,0,0,0.20)" }}
+        animate={{ rotateY: exit, boxShadow: "0 10px 30px rgba(0,0,0,0.15)" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        style={{ transformOrigin: origin, transformStyle: "preserve-3d" }}
+        onAnimationComplete={onComplete}
+        className={cn(
+          "relative h-full rounded-2xl bg-card ring-1 ring-border",
+          isRight ? "rounded-l-none" : isLeft ? "rounded-r-none" : "",
+        )}
+      >
+        {/* Front face */}
+        <div
+          className="absolute inset-0 h-full w-full overflow-hidden [backface-visibility:hidden]"
+        >
+          <div className="h-full p-6 md:p-8">
+            <div className="pointer-events-none absolute inset-0 opacity-[0.035]"
+              style={{ background: "repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.5) 29px)" }}
+            />
+            <div className="h-full overflow-auto pr-1">{front}</div>
+          </div>
+          <div className={cn("pointer-events-none absolute inset-0", isRight ? "bg-gradient-to-l from-black/20 to-transparent" : "bg-gradient-to-r from-black/20 to-transparent")} />
+        </div>
+        {/* Back face */}
+        <div
+          className="absolute inset-0 h-full w-full overflow-hidden [transform:rotateY(180deg)] [backface-visibility:hidden]"
+        >
+          <div className="h-full p-6 md:p-8">
+            <div className="pointer-events-none absolute inset-0 opacity-[0.035]"
+              style={{ background: "repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.5) 29px)" }}
+            />
+            <div className="h-full overflow-auto pr-1">{back}</div>
+          </div>
+          <div className={cn("pointer-events-none absolute inset-0", isRight ? "bg-gradient-to-r from-black/15 to-transparent" : "bg-gradient-to-l from-black/15 to-transparent")} />
+        </div>
+      </motion.div>
     </div>
   );
 }
 
 export default function Index() {
   const [pageIndex, setPageIndex] = useState(0);
-  const [dir, setDir] = useState<"next" | "prev">("next");
+  const [flipDir, setFlipDir] = useState<"next" | "prev">("next");
+  const [flipping, setFlipping] = useState<"none" | "left" | "right" | "single">("none");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
   const handleSelectCategory = (slug: string) => {
     const cat = categories.find((c) => c.slug === slug) || null;
     setSelectedCategory(cat);
-    setDir("next");
-    setPageIndex(2);
+    if (pageIndex < 2) handleNext();
   };
 
-  const prev = () => {
-    setDir("prev");
-    setPageIndex((p) => Math.max(0, p - 1));
-  };
-  const next = () => {
-    setDir("next");
-    setPageIndex((p) => Math.min(pages.length - 1, p + 1));
+  const handlePrev = () => {
+    if (pageIndex === 0 || flipping !== "none") return;
+    setFlipDir("prev");
+    setFlipping("left");
+    window.setTimeout(() => {
+      setPageIndex((p) => p - 1);
+      setFlipping("none");
+    }, 700);
   };
 
-  // keyboard navigation
+  const handleNext = () => {
+    if (pageIndex >= pages.length - 1 || flipping !== "none") return;
+    setFlipDir("next");
+    setFlipping("right");
+    window.setTimeout(() => {
+      setPageIndex((p) => p + 1);
+      setFlipping("none");
+    }, 700);
+  };
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") next();
-      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowRight") handleNext();
+      if (e.key === "ArrowLeft") handlePrev();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  });
+  }, [pageIndex, flipping]);
 
   const pageHeight = "clamp(520px, 72vh, 680px)";
 
@@ -361,25 +416,40 @@ export default function Index() {
         </div>
 
         <div className="flex items-center gap-3 md:gap-6">
-          <ArrowButton direction="left" onClick={prev} disabled={pageIndex === 0} />
+          <ArrowButton direction="left" onClick={handlePrev} disabled={pageIndex === 0 || flipping !== "none"} />
 
           {/* Desktop: two-page spread */}
           <div className="relative hidden md:flex w-[900px] max-w-[90vw] rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 h-[var(--page-h)]">
             <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
 
-            <Paper
-              side="left"
-              k={`left-${Math.max(0, pageIndex - 1)}-${dir}`}
-              dir={dir}
-            >
-              {pageIndex === 0
-                ? pages[0].content
-                : pages[pageIndex - 1]?.content ?? pages[0].content}
-            </Paper>
+            <Paper side="left">{pageIndex === 0 ? pages[0].content : pages[pageIndex - 1]?.content ?? pages[0].content}</Paper>
+            <Paper side="right">{pages[pageIndex].content}</Paper>
 
-            <Paper side="right" k={`right-${pageIndex}-${dir}`} dir={dir}>
-              {pages[pageIndex].content}
-            </Paper>
+            {flipping === "right" && (
+              <FlipOverlay
+                side="right"
+                dir={flipDir}
+                front={pages[pageIndex].content}
+                back={pages[Math.min(pageIndex + 1, pages.length - 1)].content}
+                onComplete={() => {
+                  setPageIndex((p) => Math.min(p + 1, pages.length - 1));
+                  setFlipping("none");
+                }}
+              />
+            )}
+
+            {flipping === "left" && (
+              <FlipOverlay
+                side="left"
+                dir={flipDir}
+                front={pages[Math.max(pageIndex - 1, 0)].content}
+                back={pages[pageIndex].content}
+                onComplete={() => {
+                  setPageIndex((p) => Math.max(p - 1, 0));
+                  setFlipping("none");
+                }}
+              />
+            )}
           </div>
 
           {/* Mobile: single page */}
@@ -387,25 +457,27 @@ export default function Index() {
             className="md:hidden w-full max-w-xl rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 p-6 h-[var(--page-h)] overflow-hidden"
             style={{ perspective: 1600 }}
           >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={`mobile-${pageIndex}-${dir}`}
-                initial={{ rotateY: dir === "next" ? 90 : -90, opacity: 0.9 }}
-                animate={{ rotateY: 0, opacity: 1 }}
-                exit={{ rotateY: dir === "next" ? -90 : 90, opacity: 0.85 }}
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                style={{ transformOrigin: "left center", backfaceVisibility: "hidden" }}
-                className="h-full"
-              >
-                <div className="h-full overflow-auto pr-1">{pages[pageIndex].content}</div>
-              </motion.div>
-            </AnimatePresence>
+            <div className="h-full">{pages[pageIndex].content}</div>
+            {flipping === "single" && (
+              <FlipOverlay
+                side="single"
+                dir={flipDir}
+                front={pages[pageIndex].content}
+                back={pages[flipDir === "next" ? Math.min(pageIndex + 1, pages.length - 1) : Math.max(pageIndex - 1, 0)].content}
+                onComplete={() => {
+                  setPageIndex((p) =>
+                    flipDir === "next" ? Math.min(p + 1, pages.length - 1) : Math.max(p - 1, 0),
+                  );
+                  setFlipping("none");
+                }}
+              />
+            )}
           </div>
 
           <ArrowButton
             direction="right"
-            onClick={next}
-            disabled={pageIndex === pages.length - 1}
+            onClick={handleNext}
+            disabled={pageIndex === pages.length - 1 || flipping !== "none"}
           />
         </div>
 
