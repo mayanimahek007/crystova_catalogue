@@ -192,9 +192,7 @@ function FlipOverlay({
         isLeft && "right-1/2 w-1/2",
         isSingle && "left-0 right-0",
       )}
-      style={{
-        perspective: 1600,
-      }}
+      style={{ perspective: 1600 }}
     >
       <motion.div
         initial={{ rotateY: initial, boxShadow: "0 20px 60px rgba(0,0,0,0.20)" }}
@@ -207,29 +205,41 @@ function FlipOverlay({
           isRight ? "rounded-l-none" : isLeft ? "rounded-r-none" : "",
         )}
       >
-        {/* Front face */}
-        <div
-          className="absolute inset-0 h-full w-full overflow-hidden [backface-visibility:hidden]"
-        >
+        <div className="absolute inset-0 h-full w-full overflow-hidden [backface-visibility:hidden]">
           <div className="h-full p-6 md:p-8">
-            <div className="pointer-events-none absolute inset-0 opacity-[0.035]"
-              style={{ background: "repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.5) 29px)" }}
+            <div
+              className="pointer-events-none absolute inset-0 opacity-[0.035]"
+              style={{
+                background:
+                  "repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.5) 29px)",
+              }}
             />
             <div className="h-full overflow-auto pr-1">{front}</div>
           </div>
-          <div className={cn("pointer-events-none absolute inset-0", isRight ? "bg-gradient-to-l from-black/20 to-transparent" : "bg-gradient-to-r from-black/20 to-transparent")} />
+          <div
+            className={cn(
+              "pointer-events-none absolute inset-0",
+              isRight ? "bg-gradient-to-l from-black/20 to-transparent" : "bg-gradient-to-r from-black/20 to-transparent",
+            )}
+          />
         </div>
-        {/* Back face */}
-        <div
-          className="absolute inset-0 h-full w-full overflow-hidden [transform:rotateY(180deg)] [backface-visibility:hidden]"
-        >
+        <div className="absolute inset-0 h-full w-full overflow-hidden [transform:rotateY(180deg)] [backface-visibility:hidden]">
           <div className="h-full p-6 md:p-8">
-            <div className="pointer-events-none absolute inset-0 opacity-[0.035]"
-              style={{ background: "repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.5) 29px)" }}
+            <div
+              className="pointer-events-none absolute inset-0 opacity-[0.035]"
+              style={{
+                background:
+                  "repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.5) 29px)",
+              }}
             />
             <div className="h-full overflow-auto pr-1">{back}</div>
           </div>
-          <div className={cn("pointer-events-none absolute inset-0", isRight ? "bg-gradient-to-r from-black/15 to-transparent" : "bg-gradient-to-l from-black/15 to-transparent")} />
+          <div
+            className={cn(
+              "pointer-events-none absolute inset-0",
+              isRight ? "bg-gradient-to-r from-black/15 to-transparent" : "bg-gradient-to-l from-black/15 to-transparent",
+            )}
+          />
         </div>
       </motion.div>
     </div>
@@ -242,41 +252,6 @@ export default function Index() {
   const [flipping, setFlipping] = useState<"none" | "left" | "right" | "single">("none");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
-  const handleSelectCategory = (slug: string) => {
-    const cat = categories.find((c) => c.slug === slug) || null;
-    setSelectedCategory(cat);
-    if (pageIndex < 2) handleNext();
-  };
-
-  const handlePrev = () => {
-    if (pageIndex === 0 || flipping !== "none") return;
-    setFlipDir("prev");
-    setFlipping("left");
-    window.setTimeout(() => {
-      setPageIndex((p) => p - 1);
-      setFlipping("none");
-    }, 700);
-  };
-
-  const handleNext = () => {
-    if (pageIndex >= pages.length - 1 || flipping !== "none") return;
-    setFlipDir("next");
-    setFlipping("right");
-    window.setTimeout(() => {
-      setPageIndex((p) => p + 1);
-      setFlipping("none");
-    }, 700);
-  };
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") handleNext();
-      if (e.key === "ArrowLeft") handlePrev();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [pageIndex, flipping]);
-
   const pageHeight = "clamp(520px, 72vh, 680px)";
 
   const pages = useMemo(() => {
@@ -286,16 +261,13 @@ export default function Index() {
         <div className="flex h-full flex-col items-center justify-center text-center select-none">
           <div className="mb-4 flex items-center gap-3 text-primary">
             <Gem className="h-7 w-7" />
-            <span className="tracking-[0.35em] text-xs uppercase text-muted-foreground">
-              Jewelry Diary
-            </span>
+            <span className="tracking-[0.35em] text-xs uppercase text-muted-foreground">Jewelry Diary</span>
           </div>
           <h1 className="font-brand text-5xl md:text-6xl lg:text-7xl font-semibold bg-gradient-to-br from-primary to-amber-500 bg-clip-text text-transparent">
             Crystova
           </h1>
           <p className="mt-4 max-w-sm text-sm md:text-base text-muted-foreground">
-            A personal log for your gems, gold, and timeless keepsakes. Keep
-            every sparkle remembered.
+            A personal log for your gems, gold, and timeless keepsakes. Keep every sparkle remembered.
           </p>
         </div>
       ),
@@ -310,9 +282,7 @@ export default function Index() {
               <Gem className="h-5 w-5 text-primary" />
               <h2 className="font-brand text-2xl md:text-3xl">Categories</h2>
             </div>
-            <p className="text-xs md:text-sm text-muted-foreground">
-              Tap a category to open products
-            </p>
+            <p className="text-xs md:text-sm text-muted-foreground">Tap a category to open products</p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -323,12 +293,7 @@ export default function Index() {
                 className="group relative overflow-hidden rounded-xl ring-1 ring-border shadow hover:shadow-lg transition-all"
               >
                 <div className="relative aspect-[4/3] w-full">
-                  <img
-                    src={cat.image}
-                    alt={cat.name}
-                    className="absolute inset-0 h-full w-full object-cover"
-                    loading="lazy"
-                  />
+                  <img src={cat.image} alt={cat.name} className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent opacity-90" />
                   <div className="absolute bottom-0 left-0 right-0 p-3">
                     <div className="inline-flex items-center rounded-full bg-card/80 backdrop-blur px-3 py-1 text-xs ring-1 ring-border text-foreground">
@@ -349,42 +314,27 @@ export default function Index() {
         <div className="h-full">
           <div className="mb-4 flex items-center gap-3">
             <Gem className="h-5 w-5 text-primary" />
-            <h2 className="font-brand text-2xl md:text-3xl">
-              {selectedCategory ? selectedCategory.name : "Products"}
-            </h2>
+            <h2 className="font-brand text-2xl md:text-3xl">{selectedCategory ? selectedCategory.name : "Products"}</h2>
           </div>
 
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-            {(selectedCategory ? productsByCategory[selectedCategory.slug] : [])?.map(
-              (p) => (
-                <div
-                  key={p.sku}
-                  className="rounded-xl ring-1 ring-border bg-card shadow hover:shadow-lg transition-all overflow-hidden"
-                >
-                  <div className="relative aspect-square">
-                    <img
-                      src={p.image}
-                      alt={p.sku}
-                      className="absolute inset-0 h-full w-full object-cover"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-black/0 via-black/0 to-black/10" />
-                  </div>
-                  <div className="p-3">
-                    <div className="text-xs text-muted-foreground">SKU</div>
-                    <div className="font-medium tracking-wide">{p.sku}</div>
-                    <div className="mt-3">
-                      <Button
-                        className="w-full"
-                        onClick={() => toast("Buy Now", { description: `SKU: ${p.sku}` })}
-                      >
-                        Buy Now
-                      </Button>
-                    </div>
+            {(selectedCategory ? productsByCategory[selectedCategory.slug] : [])?.map((p) => (
+              <div key={p.sku} className="rounded-xl ring-1 ring-border bg-card shadow hover:shadow-lg transition-all overflow-hidden">
+                <div className="relative aspect-square">
+                  <img src={p.image} alt={p.sku} className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black/0 via-black/0 to-black/10" />
+                </div>
+                <div className="p-3">
+                  <div className="text-xs text-muted-foreground">SKU</div>
+                  <div className="font-medium tracking-wide">{p.sku}</div>
+                  <div className="mt-3">
+                    <Button className="w-full" onClick={() => toast("Buy Now", { description: `SKU: ${p.sku}` })}>
+                      Buy Now
+                    </Button>
                   </div>
                 </div>
-              ),
-            )}
+              </div>
+            ))}
 
             {!selectedCategory && (
               <div className="col-span-full flex items-center justify-center rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
@@ -399,6 +349,46 @@ export default function Index() {
     return [page1, page2, page3];
   }, [selectedCategory]);
 
+  // Clamp pageIndex when pages change
+  useEffect(() => {
+    if (pageIndex > pages.length - 1) setPageIndex(pages.length - 1);
+    if (pageIndex < 0) setPageIndex(0);
+  }, [pages.length]);
+
+  const clamp = (i: number) => Math.max(0, Math.min(i, pages.length - 1));
+  const cur = clamp(pageIndex);
+  const prevIdx = clamp(cur - 1);
+  const nextIdx = clamp(cur + 1);
+
+  const handleSelectCategory = (slug: string) => {
+    const cat = categories.find((c) => c.slug === slug) || null;
+    setSelectedCategory(cat);
+    // Start flip to next page (products)
+    setFlipDir("next");
+    setFlipping("right");
+  };
+
+  const goPrev = () => {
+    if (cur === 0 || flipping !== "none") return;
+    setFlipDir("prev");
+    setFlipping("left");
+  };
+
+  const goNext = () => {
+    if (cur >= pages.length - 1 || flipping !== "none") return;
+    setFlipDir("next");
+    setFlipping("right");
+  };
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") goNext();
+      if (e.key === "ArrowLeft") goPrev();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [cur, flipping, pages.length]);
+
   return (
     <main
       className={cn(
@@ -406,33 +396,29 @@ export default function Index() {
         "dark:from-[hsl(24_30%_7%)] dark:via-[hsl(24_22%_10%)] dark:to-[hsl(20_20%_8%)]",
       )}
     >
-      <div
-        className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4"
-        style={{ ["--page-h" as any]: pageHeight, perspective: 1600 }}
-      >
+      <div className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4" style={{ ["--page-h" as any]: "clamp(520px, 72vh, 680px)", perspective: 1600 }}>
         <div className="pointer-events-none absolute inset-0 -z-10 opacity-40 blur-3xl">
           <div className="absolute left-10 top-20 h-40 w-40 rounded-full bg-amber-300/40" />
           <div className="absolute bottom-20 right-10 h-48 w-48 rounded-full bg-rose-300/40" />
         </div>
 
         <div className="flex items-center gap-3 md:gap-6">
-          <ArrowButton direction="left" onClick={handlePrev} disabled={pageIndex === 0 || flipping !== "none"} />
+          <ArrowButton direction="left" onClick={goPrev} disabled={cur === 0 || flipping !== "none"} />
 
-          {/* Desktop: two-page spread */}
           <div className="relative hidden md:flex w-[900px] max-w-[90vw] rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 h-[var(--page-h)]">
             <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
 
-            <Paper side="left">{pageIndex === 0 ? pages[0].content : pages[pageIndex - 1]?.content ?? pages[0].content}</Paper>
-            <Paper side="right">{pages[pageIndex].content}</Paper>
+            <Paper side="left">{cur === 0 ? pages[0].content : pages[prevIdx].content}</Paper>
+            <Paper side="right">{pages[cur].content}</Paper>
 
             {flipping === "right" && (
               <FlipOverlay
                 side="right"
                 dir={flipDir}
-                front={pages[pageIndex].content}
-                back={pages[Math.min(pageIndex + 1, pages.length - 1)].content}
+                front={pages[cur].content}
+                back={pages[nextIdx].content}
                 onComplete={() => {
-                  setPageIndex((p) => Math.min(p + 1, pages.length - 1));
+                  setPageIndex((p) => clamp(p + 1));
                   setFlipping("none");
                 }}
               />
@@ -442,47 +428,37 @@ export default function Index() {
               <FlipOverlay
                 side="left"
                 dir={flipDir}
-                front={pages[Math.max(pageIndex - 1, 0)].content}
-                back={pages[pageIndex].content}
+                front={pages[prevIdx].content}
+                back={pages[cur].content}
                 onComplete={() => {
-                  setPageIndex((p) => Math.max(p - 1, 0));
+                  setPageIndex((p) => clamp(p - 1));
                   setFlipping("none");
                 }}
               />
             )}
           </div>
 
-          {/* Mobile: single page */}
-          <div
-            className="md:hidden w-full max-w-xl rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 p-6 h-[var(--page-h)] overflow-hidden"
-            style={{ perspective: 1600 }}
-          >
-            <div className="h-full">{pages[pageIndex].content}</div>
-            {flipping === "single" && (
+          <div className="md:hidden w-full max-w-xl rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 p-6 h-[var(--page-h)] overflow-hidden" style={{ perspective: 1600 }}>
+            <div className="h-full">{pages[cur].content}</div>
+            {flipping !== "none" && (
               <FlipOverlay
                 side="single"
                 dir={flipDir}
-                front={pages[pageIndex].content}
-                back={pages[flipDir === "next" ? Math.min(pageIndex + 1, pages.length - 1) : Math.max(pageIndex - 1, 0)].content}
+                front={pages[cur].content}
+                back={pages[flipDir === "next" ? nextIdx : prevIdx].content}
                 onComplete={() => {
-                  setPageIndex((p) =>
-                    flipDir === "next" ? Math.min(p + 1, pages.length - 1) : Math.max(p - 1, 0),
-                  );
+                  setPageIndex((p) => (flipDir === "next" ? clamp(p + 1) : clamp(p - 1)));
                   setFlipping("none");
                 }}
               />
             )}
           </div>
 
-          <ArrowButton
-            direction="right"
-            onClick={handleNext}
-            disabled={pageIndex === pages.length - 1 || flipping !== "none"}
-          />
+          <ArrowButton direction="right" onClick={goNext} disabled={cur === pages.length - 1 || flipping !== "none"} />
         </div>
 
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-card/80 px-4 py-2 text-sm shadow ring-1 ring-border">
-          Page {pageIndex + 1} / {pages.length}
+          Page {cur + 1} / {pages.length}
         </div>
       </div>
     </main>
