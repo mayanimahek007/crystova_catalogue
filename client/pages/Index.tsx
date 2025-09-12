@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Gem } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -110,18 +110,14 @@ function FlipOverlay({ side, front, back, dir, onComplete }: { side: "left" | "r
 }
 
 export default function Index() {
-  // 0: cover closed (only right page visible)
-  // 1: open welcome (left image, right content)
-  // 2: categories on both sides
-  // 3: products (right shows products; left keeps categories)
-  const [view, setView] = useState(0);
+  const [view, setView] = useState(0); // 0 cover, 1 welcome, 2 categories, 3 products
   const [flipDir, setFlipDir] = useState<"next" | "prev">("next");
   const [flipping, setFlipping] = useState<"none" | "left" | "right" | "single">("none");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const flipGuard = useRef(false);
 
   const clamp = (v: number) => Math.max(0, Math.min(v, 3));
   const isCover = view === 0;
-  const pageHeight = "clamp(520px, 72vh, 680px)";
 
   const LeftImage = (
     <div className="h-full relative">
@@ -195,47 +191,19 @@ export default function Index() {
     </div>
   );
 
-  const leftContentFor = (v: number) => {
-    switch (v) {
-      case 1:
-        return LeftImage;
-      case 2:
-        return CategoriesGrid;
-      case 3:
-        return CategoriesGrid;
-      default:
-        return null;
-    }
-  };
-
-  const rightContentFor = (v: number) => {
-    switch (v) {
-      case 0:
-        return (
-          <div className="h-full flex flex-col items-center justify-center text-center select-none">
-            <div className="relative mb-6">
-              <div className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-amber-200/60 to-rose-200/60 blur-xl" />
-              <div className="relative rounded-[2rem] px-10 py-8 ring-1 ring-border bg-gradient-to-br from-amber-50 to-rose-50">
-                <div className="mb-3 flex items-center justify-center gap-3 text-primary">
-                  <Gem className="h-7 w-7" />
-                  <span className="tracking-[0.35em] text-xs uppercase text-muted-foreground">Jewelry Diary</span>
-                </div>
-                <div className="font-brand text-5xl md:text-6xl font-semibold bg-gradient-to-br from-primary to-amber-500 bg-clip-text text-transparent">Crystova</div>
-              </div>
-            </div>
-            <p className="text-muted-foreground">Flip to open the diary</p>
-          </div>
-        );
-      case 1:
-        return RightWelcome;
-      case 2:
-        return CategoriesGrid;
-      case 3:
-        return ProductsGrid;
-      default:
-        return RightWelcome;
-    }
-  };
+  const leftContentFor = (v: number) => (v === 1 ? LeftImage : v >= 2 ? CategoriesGrid : null);
+  const rightContentFor = (v: number) => (v === 0 ? (
+    <div className="h-full flex flex-col items-center justify-center text-center select-none">
+      <div className="relative mb-6">
+        <div className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-amber-200/60 to-rose-200/60 blur-xl" />
+        <div className="relative rounded-[2rem] px-10 py-8 ring-1 ring-border bg-gradient-to-br from-amber-50 to-rose-50">
+          <div className="mb-3 flex items-center justify-center gap-3 text-primary"><Gem className="h-7 w-7" /><span className="tracking-[0.35em] text-xs uppercase text-muted-foreground">Jewelry Diary</span></div>
+          <div className="font-brand text-5xl md:text-6xl font-semibold bg-gradient-to-br from-primary to-amber-500 bg-clip-text text-transparent">Crystova</div>
+        </div>
+      </div>
+      <p className="text-muted-foreground">Flip to open the diary</p>
+    </div>
+  ) : v === 1 ? RightWelcome : v === 2 ? CategoriesGrid : ProductsGrid);
 
   const onSelectCategory = (slug: string) => {
     const cat = categories.find((c) => c.slug === slug) || null;
@@ -246,15 +214,23 @@ export default function Index() {
   const startFlipPrev = () => {
     if (view === 0 || flipping !== "none") return;
     setFlipDir("prev");
-    if (view === 1) setFlipping("single");
-    else setFlipping("left");
+    setFlipping(view === 1 ? "single" : "left");
   };
 
   const startFlipNext = () => {
     if (view >= 3 || flipping !== "none") return;
     setFlipDir("next");
-    if (view === 0) setFlipping("single");
-    else setFlipping("right");
+    setFlipping(view === 0 ? "single" : "right");
+  };
+
+  const completeFlip = (delta: 1 | -1) => {
+    if (flipGuard.current) return;
+    flipGuard.current = true;
+    setView((v) => clamp(v + delta));
+    setFlipping("none");
+    setTimeout(() => {
+      flipGuard.current = false;
+    }, 0);
   };
 
   useEffect(() => {
@@ -265,6 +241,12 @@ export default function Index() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [view, flipping]);
+
+  // Reset to cover on initial mount (avoid HMR-resumed state)
+  useEffect(() => {
+    setView(0);
+    setSelectedCategory(null);
+  }, []);
 
   return (
     <main className={cn("min-h-screen w-full bg-gradient-to-br from-rose-50 via-amber-50 to-rose-100", "dark:from-[hsl(24_30%_7%)] dark:via-[hsl(24_22%_10%)] dark:to-[hsl(20_20%_8%)]")}> 
@@ -278,7 +260,7 @@ export default function Index() {
           <ArrowButton direction="left" onClick={startFlipPrev} disabled={view === 0 || flipping !== "none"} />
 
           <div className="relative hidden md:flex w-[900px] max-w-[90vw] rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 h-[var(--page-h)]">
-            {! (view === 0) && (
+            {view !== 0 && (
               <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
             )}
 
@@ -297,10 +279,7 @@ export default function Index() {
                 dir={flipDir}
                 front={rightContentFor(view)}
                 back={rightContentFor(clamp(view + 1))}
-                onComplete={() => {
-                  setView((v) => clamp(v + 1));
-                  setFlipping("none");
-                }}
+                onComplete={() => completeFlip(1)}
               />
             )}
 
@@ -310,10 +289,7 @@ export default function Index() {
                 dir={flipDir}
                 front={leftContentFor(clamp(view - 1))}
                 back={leftContentFor(view)}
-                onComplete={() => {
-                  setView((v) => clamp(v - 1));
-                  setFlipping("none");
-                }}
+                onComplete={() => completeFlip(-1)}
               />
             )}
 
@@ -323,10 +299,7 @@ export default function Index() {
                 dir={flipDir}
                 front={rightContentFor(view)}
                 back={rightContentFor(clamp(view + (flipDir === "next" ? 1 : -1)))}
-                onComplete={() => {
-                  setView((v) => clamp(v + (flipDir === "next" ? 1 : -1)));
-                  setFlipping("none");
-                }}
+                onComplete={() => completeFlip(flipDir === "next" ? 1 : -1)}
               />
             )}
           </div>
@@ -339,10 +312,7 @@ export default function Index() {
                 dir={flipDir}
                 front={rightContentFor(view)}
                 back={rightContentFor(clamp(view + (flipDir === "next" ? 1 : -1)))}
-                onComplete={() => {
-                  setView((v) => clamp(v + (flipDir === "next" ? 1 : -1)));
-                  setFlipping("none");
-                }}
+                onComplete={() => completeFlip(flipDir === "next" ? 1 : -1)}
               />
             )}
           </div>
