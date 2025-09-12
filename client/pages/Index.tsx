@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Gem } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -40,6 +40,10 @@ function Paper({
   k: string | number;
   dir: "next" | "prev";
 }) {
+  const origin = side === "right" ? "left center" : "right center";
+  const initialRot = dir === "next" ? (side === "right" ? 90 : -10) : (side === "right" ? 10 : -90);
+  const exitRot = dir === "next" ? (side === "right" ? -90 : 10) : (side === "right" ? -10 : 90);
+
   return (
     <div
       className={cn(
@@ -48,6 +52,7 @@ function Paper({
         side === "left" ? "rounded-r-none" : "rounded-l-none",
         "h-[var(--page-h)]",
       )}
+      style={{ transformStyle: "preserve-3d" }}
     >
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.035]"
@@ -56,19 +61,22 @@ function Paper({
             "repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.5) 29px)",
         }}
       />
-      <AnimatePresence mode="wait" initial={false}
-      >
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={k}
-          initial={{ x: dir === "next" ? 40 : -40, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: dir === "next" ? -40 : 40, opacity: 0 }}
-          transition={{ duration: 0.35, ease: "easeOut" }}
+          initial={{ rotateY: initialRot, opacity: 0.9 }}
+          animate={{ rotateY: 0, opacity: 1 }}
+          exit={{ rotateY: exitRot, opacity: 0.85 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          style={{ transformOrigin: origin, backfaceVisibility: "hidden" }}
           className="h-full"
         >
           <div className="h-full overflow-auto pr-1">{children}</div>
         </motion.div>
       </AnimatePresence>
+
+      {/* soft inner vignette for luxury vibe */}
+      <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-tr from-black/0 via-black/0 to-black/5" />
     </div>
   );
 }
@@ -160,6 +168,16 @@ export default function Index() {
     setPageIndex((p) => Math.min(pages.length - 1, p + 1));
   };
 
+  // keyboard navigation
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   const pageHeight = "clamp(480px, 70vh, 640px)";
 
   return (
@@ -171,7 +189,7 @@ export default function Index() {
     >
       <div
         className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4"
-        style={{ ["--page-h" as any]: pageHeight }}
+        style={{ ["--page-h" as any]: pageHeight, perspective: 1600 }}
       >
         {/* decorative glow */}
         <div className="pointer-events-none absolute inset-0 -z-10 opacity-40 blur-3xl">
@@ -189,7 +207,7 @@ export default function Index() {
 
             <Paper
               side="left"
-              k={`left-${Math.max(0, pageIndex - 1)}`}
+              k={`left-${Math.max(0, pageIndex - 1)}-${dir}`}
               dir={dir}
             >
               {pageIndex === 0
@@ -197,20 +215,21 @@ export default function Index() {
                 : pages[pageIndex - 1]?.content ?? pages[0].content}
             </Paper>
 
-            <Paper side="right" k={`right-${pageIndex}`} dir={dir}>
+            <Paper side="right" k={`right-${pageIndex}-${dir}`} dir={dir}>
               {pages[pageIndex].content}
             </Paper>
           </div>
 
           {/* Mobile: single page */}
-          <div className="md:hidden w-full max-w-xl rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 p-6 h-[var(--page-h)] overflow-hidden">
+          <div className="md:hidden w-full max-w-xl rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 p-6 h-[var(--page-h)] overflow-hidden" style={{ perspective: 1600 }}>
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
-                key={`mobile-${pageIndex}`}
-                initial={{ x: dir === "next" ? 40 : -40, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: dir === "next" ? -40 : 40, opacity: 0 }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
+                key={`mobile-${pageIndex}-${dir}`}
+                initial={{ rotateY: dir === "next" ? 90 : -90, opacity: 0.9 }}
+                animate={{ rotateY: 0, opacity: 1 }}
+                exit={{ rotateY: dir === "next" ? -90 : 90, opacity: 0.85 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                style={{ transformOrigin: "left center", backfaceVisibility: "hidden" }}
                 className="h-full"
               >
                 <div className="h-full overflow-auto pr-1">{pages[pageIndex].content}</div>
