@@ -9,100 +9,32 @@ type Category = { slug: string; name: string; image: string };
 type Product = { sku: string; image: string };
 
 const categories: Category[] = [
-  {
-    slug: "rings",
-    name: "Rings",
-    image:
-      "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop",
-  },
-  {
-    slug: "necklaces",
-    name: "Necklaces",
-    image:
-      "https://images.unsplash.com/photo-1520974044823-b88c0b4a0f64?q=80&w=1600&auto=format&fit=crop",
-  },
-  {
-    slug: "bracelets",
-    name: "Bracelets",
-    image:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1600&auto=format&fit=crop",
-  },
-  {
-    slug: "earrings",
-    name: "Earrings",
-    image:
-      "https://images.unsplash.com/photo-1603575449236-21efc50d8f63?q=80&w=1600&auto=format&fit=crop",
-  },
+  { slug: "rings", name: "Rings", image: "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop" },
+  { slug: "necklaces", name: "Necklaces", image: "https://images.unsplash.com/photo-1520974044823-b88c0b4a0f64?q=80&w=1600&auto=format&fit=crop" },
+  { slug: "bracelets", name: "Bracelets", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1600&auto=format&fit=crop" },
+  { slug: "earrings", name: "Earrings", image: "https://images.unsplash.com/photo-1603575449236-21efc50d8f63?q=80&w=1600&auto=format&fit=crop" },
 ];
 
 const productsByCategory: Record<string, Product[]> = {
   rings: [
-    {
-      sku: "RNG-CRY-001",
-      image:
-        "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1400&auto=format&fit=crop",
-    },
-    {
-      sku: "RNG-GLD-014",
-      image:
-        "https://images.unsplash.com/photo-1518544801976-3e18df9ab01f?q=80&w=1400&auto=format&fit=crop",
-    },
-    {
-      sku: "RNG-RQZ-112",
-      image:
-        "https://images.unsplash.com/photo-1520962916132-6000e8c1c1d6?q=80&w=1400&auto=format&fit=crop",
-    },
+    { sku: "RNG-CRY-001", image: "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1400&auto=format&fit=crop" },
+    { sku: "RNG-GLD-014", image: "https://images.unsplash.com/photo-1518544801976-3e18df9ab01f?q=80&w=1400&auto=format&fit=crop" },
+    { sku: "RNG-RQZ-112", image: "https://images.unsplash.com/photo-1520962916132-6000e8c1c1d6?q=80&w=1400&auto=format&fit=crop" },
   ],
   necklaces: [
-    {
-      sku: "NCK-GLD-220",
-      image:
-        "https://images.unsplash.com/photo-1617038260897-3b6e22fc26a5?q=80&w=1400&auto=format&fit=crop",
-    },
-    {
-      sku: "NCK-PRL-333",
-      image:
-        "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=1400&auto=format&fit=crop",
-    },
-    {
-      sku: "NCK-CRY-908",
-      image:
-        "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1400&auto=format&fit=crop",
-    },
+    { sku: "NCK-GLD-220", image: "https://images.unsplash.com/photo-1617038260897-3b6e22fc26a5?q=80&w=1400&auto=format&fit=crop" },
+    { sku: "NCK-PRL-333", image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=1400&auto=format&fit=crop" },
+    { sku: "NCK-CRY-908", image: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1400&auto=format&fit=crop" },
   ],
   bracelets: [
-    {
-      sku: "BRC-GLD-010",
-      image:
-        "https://images.unsplash.com/photo-1603565815872-4b0b1a4a9d8a?q=80&w=1400&auto=format&fit=crop",
-    },
-    {
-      sku: "BRC-CRY-021",
-      image:
-        "https://images.unsplash.com/photo-1611276723551-98ac5d26a254?q=80&w=1400&auto=format&fit=crop",
-    },
-    {
-      sku: "BRC-RSE-044",
-      image:
-        "https://images.unsplash.com/photo-1620000000391-25a1b7eb98c2?q=80&w=1400&auto=format&fit=crop",
-    },
+    { sku: "BRC-GLD-010", image: "https://images.unsplash.com/photo-1603565815872-4b0b1a4a9d8a?q=80&w=1400&auto=format&fit=crop" },
+    { sku: "BRC-CRY-021", image: "https://images.unsplash.com/photo-1611276723551-98ac5d26a254?q=80&w=1400&auto=format&fit=crop" },
+    { sku: "BRC-RSE-044", image: "https://images.unsplash.com/photo-1620000000391-25a1b7eb98c2?q=80&w=1400&auto=format&fit=crop" },
   ],
   earrings: [
-    {
-      sku: "EAR-GLD-511",
-      image:
-        "https://images.unsplash.com/photo-1603575449236-21efc50d8f63?q=80&w=1400&auto=format&fit=crop",
-    },
-    {
-      sku: "EAR-PRL-502",
-      image:
-        "https://images.unsplash.com/photo-1609252925143-0f4c48eb2b69?q=80&w=1400&auto=format&fit=crop",
-    },
-    {
-      sku: "EAR-DMD-577",
-      image:
-        "https://images.unsplash.com/photo-1601655781321-9ec6a3a3aad0?q=80&w=1400&auto=format&fit=crop",
-    },
+    { sku: "EAR-GLD-511", image: "https://images.unsplash.com/photo-1603575449236-21efc50d8f63?q=80&w=1400&auto=format&fit=crop" },
+    { sku: "EAR-PRL-502", image: "https://images.unsplash.com/photo-1609252925143-0f4c48eb2b69?q=80&w=1400&auto=format&fit=crop" },
+    { sku: "EAR-DMD-577", image: "https://images.unsplash.com/photo-1601655781321-9ec6a3a3aad0?q=80&w=1400&auto=format&fit=crop" },
   ],
 };
 
@@ -124,21 +56,18 @@ function ArrowButton({ direction, onClick, disabled }: { direction: "left" | "ri
   );
 }
 
-function PageShell({ children, side }: { children: React.ReactNode; side: "left" | "right" }) {
+function PageShell({ children, side, full }: { children: React.ReactNode; side: "left" | "right"; full?: boolean }) {
   return (
     <div
       className={cn(
         "relative flex-1 overflow-hidden rounded-2xl bg-card p-6 md:p-8",
         "shadow-[inset_0_0_0_1px_hsl(var(--border)),0_30px_80px_-20px_rgba(0,0,0,0.25)]",
-        side === "left" ? "rounded-r-none" : "rounded-l-none",
+        full ? "rounded-2xl" : side === "left" ? "rounded-r-none" : "rounded-l-none",
         "h-[var(--page-h)]",
       )}
       style={{ transformStyle: "preserve-3d" }}
     >
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.035]"
-        style={{ background: "repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.5) 29px)" }}
-      />
+      <div className="pointer-events-none absolute inset-0 opacity-[0.035]" style={{ background: "repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.5) 29px)" }} />
       <div className="h-full overflow-auto pr-1">{children}</div>
       <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-tr from-black/0 via-black/0 to-black/5" />
     </div>
@@ -181,38 +110,22 @@ function FlipOverlay({ side, front, back, dir, onComplete }: { side: "left" | "r
 }
 
 export default function Index() {
-  const [view, setView] = useState(0); // 0: cover, 1: open (left img/right content), 2: categories (both), 3: products
+  // 0: cover closed (only right page visible)
+  // 1: open welcome (left image, right content)
+  // 2: categories on both sides
+  // 3: products (right shows products; left keeps categories)
+  const [view, setView] = useState(0);
   const [flipDir, setFlipDir] = useState<"next" | "prev">("next");
   const [flipping, setFlipping] = useState<"none" | "left" | "right" | "single">("none");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
   const clamp = (v: number) => Math.max(0, Math.min(v, 3));
+  const isCover = view === 0;
   const pageHeight = "clamp(520px, 72vh, 680px)";
-
-  const Cover = (
-    <div className="h-full flex flex-col items-center justify-center text-center select-none">
-      <div className="relative mb-6">
-        <div className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-amber-200/60 to-rose-200/60 blur-xl" />
-        <div className="relative rounded-[2rem] px-10 py-8 ring-1 ring-border bg-gradient-to-br from-amber-50 to-rose-50">
-          <div className="mb-3 flex items-center justify-center gap-3 text-primary">
-            <Gem className="h-7 w-7" />
-            <span className="tracking-[0.35em] text-xs uppercase text-muted-foreground">Jewelry Diary</span>
-          </div>
-          <div className="font-brand text-5xl md:text-6xl font-semibold bg-gradient-to-br from-primary to-amber-500 bg-clip-text text-transparent">Crystova</div>
-        </div>
-      </div>
-      <p className="text-muted-foreground">Flip to open the diary</p>
-    </div>
-  );
 
   const LeftImage = (
     <div className="h-full relative">
-      <img
-        src="https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1400&auto=format&fit=crop"
-        alt="Jewelry"
-        className="absolute inset-0 h-full w-full object-cover"
-        loading="lazy"
-      />
+      <img src="https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1400&auto=format&fit=crop" alt="Jewelry" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
       <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-black/0 to-black/0" />
     </div>
   );
@@ -264,11 +177,11 @@ export default function Index() {
           <div key={p.sku} className="rounded-xl ring-1 ring-border bg-card shadow hover:shadow-lg transition-all overflow-hidden">
             <div className="relative aspect-square">
               <img src={p.image} alt={p.sku} className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
-              <div className="absolute inset-0 bg-gradient-to-tr from-black/0 via-black/0 to-black/10" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-transparent to-black/10" />
             </div>
-            <div className="p-3">
-              <div className="text-xs text-muted-foreground">SKU</div>
-              <div className="font-medium tracking-wide">{p.sku}</div>
+            <div className="-mb-0.5 p-3">
+              <div className="text-[rgb(117,99,87)] text-xs">SKU</div>
+              <div className="font-medium tracking-[0.4px]">{p.sku}</div>
               <div className="mt-3">
                 <Button className="w-full" onClick={() => toast("Buy Now", { description: `SKU: ${p.sku}` })}>Buy Now</Button>
               </div>
@@ -284,8 +197,6 @@ export default function Index() {
 
   const leftContentFor = (v: number) => {
     switch (v) {
-      case 0:
-        return null; // closed cover left is hidden
       case 1:
         return LeftImage;
       case 2:
@@ -300,7 +211,21 @@ export default function Index() {
   const rightContentFor = (v: number) => {
     switch (v) {
       case 0:
-        return Cover;
+        return (
+          <div className="h-full flex flex-col items-center justify-center text-center select-none">
+            <div className="relative mb-6">
+              <div className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-amber-200/60 to-rose-200/60 blur-xl" />
+              <div className="relative rounded-[2rem] px-10 py-8 ring-1 ring-border bg-gradient-to-br from-amber-50 to-rose-50">
+                <div className="mb-3 flex items-center justify-center gap-3 text-primary">
+                  <Gem className="h-7 w-7" />
+                  <span className="tracking-[0.35em] text-xs uppercase text-muted-foreground">Jewelry Diary</span>
+                </div>
+                <div className="font-brand text-5xl md:text-6xl font-semibold bg-gradient-to-br from-primary to-amber-500 bg-clip-text text-transparent">Crystova</div>
+              </div>
+            </div>
+            <p className="text-muted-foreground">Flip to open the diary</p>
+          </div>
+        );
       case 1:
         return RightWelcome;
       case 2:
@@ -308,7 +233,7 @@ export default function Index() {
       case 3:
         return ProductsGrid;
       default:
-        return Cover;
+        return RightWelcome;
     }
   };
 
@@ -321,12 +246,17 @@ export default function Index() {
   const startFlipPrev = () => {
     if (view === 0 || flipping !== "none") return;
     setFlipDir("prev");
-    setFlipping("left");
+    // If closing to cover from view 1, flip the whole sheet
+    if (view === 1) setFlipping("single");
+    else setFlipping("left");
   };
+
   const startFlipNext = () => {
     if (view >= 3 || flipping !== "none") return;
     setFlipDir("next");
-    setFlipping("right");
+    // From cover to open, flip the whole sheet
+    if (view === 0) setFlipping("single");
+    else setFlipping("right");
   };
 
   useEffect(() => {
@@ -349,41 +279,32 @@ export default function Index() {
         <div className="flex items-center gap-3 md:gap-6">
           <ArrowButton direction="left" onClick={startFlipPrev} disabled={view === 0 || flipping !== "none"} />
 
-          {/* Desktop spread */}
           <div className="relative hidden md:flex w-[900px] max-w-[90vw] rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 h-[var(--page-h)]">
-            <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
+            {!isCover && <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />}
 
-            <PageShell side="left">{leftContentFor(view)}</PageShell>
-            <PageShell side="right">{rightContentFor(view)}</PageShell>
-
-            {flipping === "right" && (
-              <FlipOverlay
-                side="right"
-                dir={flipDir}
-                front={rightContentFor(view)}
-                back={rightContentFor(clamp(view + 1))}
-                onComplete={() => {
-                  setView((v) => clamp(v + 1));
-                  setFlipping("none");
-                }}
-              />
+            {isCover ? (
+              <PageShell side="right" full>{rightContentFor(view)}</PageShell>
+            ) : (
+              <>
+                <PageShell side="left">{leftContentFor(view)}</PageShell>
+                <PageShell side="right">{rightContentFor(view)}</PageShell>
+              </>
             )}
 
-            {flipping === "left" && (
+            {flipping && flipping !== "none" && (
               <FlipOverlay
-                side="left"
+                side={isCover || flipping === "single" ? "single" : flipping}
                 dir={flipDir}
-                front={leftContentFor(clamp(view - 1))}
-                back={leftContentFor(view)}
+                front={rightContentFor(view)}
+                back={rightContentFor(clamp(view + (flipDir === "next" ? 1 : -1)))}
                 onComplete={() => {
-                  setView((v) => clamp(v - 1));
+                  setView((v) => clamp(v + (flipDir === "next" ? 1 : -1)));
                   setFlipping("none");
                 }}
               />
             )}
           </div>
 
-          {/* Mobile: single page */}
           <div className="md:hidden w-full max-w-xl rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 p-6 h-[var(--page-h)] overflow-hidden" style={{ perspective: 1600 }}>
             <div className="h-full">{rightContentFor(view)}</div>
             {flipping !== "none" && (
