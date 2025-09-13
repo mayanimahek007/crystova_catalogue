@@ -196,7 +196,7 @@ export default function Catalog() {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/categories');
+      const response = await fetch('https://catalogue-api.crystovajewels.com/api/categories');
       if (response.ok) {
         const data = await response.json();
         setCategories(data);
@@ -216,7 +216,7 @@ export default function Catalog() {
   const fetchProductsByCategory = async (categoryName: string) => {
     try {
       setProductsLoading(true);
-      const response = await fetch(`http://localhost:5000/api/jewelry/category-name/${encodeURIComponent(categoryName)}`);
+      const response = await fetch(`https://catalogue-api.crystovajewels.com/api/jewelry/category-name/${encodeURIComponent(categoryName)}`);
       if (response.ok) {
         const data = await response.json();
         setProducts(data);
@@ -295,7 +295,7 @@ export default function Catalog() {
             >
               <div className="relative aspect-[4/3] w-full">
                 <img
-                  src={cat.imageUrl ? `http://localhost:5000${cat.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
+                  src={cat.imageUrl ? `https://catalogue-api.crystovajewels.com${cat.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
                   alt={cat.name}
                   className="absolute inset-0 h-full w-full object-cover"
                   loading="lazy"
@@ -378,7 +378,7 @@ export default function Catalog() {
             >
               <div className="relative aspect-square">
                 <img
-                  src={p.imageUrl ? `http://localhost:5000${p.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
+                  src={p.imageUrl ? `https://catalogue-api.crystovajewels.com${p.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
                   alt={p.name}
                   className="absolute inset-0 h-full w-full object-contain"
                   loading="lazy"
@@ -456,7 +456,7 @@ export default function Catalog() {
             >
               <div className="relative aspect-square">
                 <img
-                  src={p.imageUrl ? `http://localhost:5000${p.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
+                  src={p.imageUrl ? `https://catalogue-api.crystovajewels.com${p.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
                   alt={p.name}
                   className="absolute inset-0 h-full w-full object-contain"
                   loading="lazy"
@@ -519,7 +519,7 @@ export default function Catalog() {
               >
                 <div className="relative aspect-square w-full">
                   <img
-                    src={cat.imageUrl ? `http://localhost:5000${cat.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
+                    src={cat.imageUrl ? `https://catalogue-api.crystovajewels.com${cat.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
                     alt={cat.name}
                     className="absolute inset-0 h-full w-full object-cover"
                     loading="lazy"
@@ -606,7 +606,7 @@ export default function Catalog() {
               >
                 <div className="relative aspect-square">
                   <img
-                    src={p.imageUrl ? `http://localhost:5000${p.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
+                    src={p.imageUrl ? `https://catalogue-api.crystovajewels.com${p.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
                     alt={p.name}
                     className="absolute inset-0 h-full w-full object-cover"
                     loading="lazy"
@@ -680,7 +680,7 @@ export default function Catalog() {
              >
                <div className="relative aspect-square w-full">
                  <img
-                   src={cat.imageUrl ? `http://localhost:5000${cat.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
+                   src={cat.imageUrl ? `https://catalogue-api.crystovajewels.com${cat.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
                    alt={cat.name}
                    className="absolute inset-0 h-full w-full object-contain"
                    loading="lazy"
@@ -729,7 +729,7 @@ export default function Catalog() {
              >
                <div className="relative aspect-square w-full">
                  <img
-                   src={cat.imageUrl ? `http://localhost:5000${cat.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
+                   src={cat.imageUrl ? `https://catalogue-api.crystovajewels.com${cat.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
                    alt={cat.name}
                    className="absolute inset-0 h-full w-full object-cover"
                    loading="lazy"
