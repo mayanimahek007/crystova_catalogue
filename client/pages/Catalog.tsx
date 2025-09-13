@@ -385,7 +385,7 @@ export default function Catalog() {
                 />
                 <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
               </div>
-              <div className=" -inset-6 -mb-0.5 left-1 p-3 pb-0 relative">
+              <div className=" -inset-8 -mb-0.5 -mb-0.5 left-1 p-3 pb-0 relative">
             
                 <div className="text-xs tracking-[0.4px]">{p.sku}</div>
                
@@ -463,7 +463,7 @@ export default function Catalog() {
                 />
                 <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
               </div>
-              <div className=" -inset-6 -mb-0.5 left-1 p-3 pb-0 relative">
+              <div className=" -inset-8 -mb-0.5 -mb-0.5 left-1 p-3 pb-0 relative">
             
                 <div className="text-xs tracking-[0.4px]">{p.sku}</div>
                
@@ -613,7 +613,7 @@ export default function Catalog() {
                   />
                   <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
                 </div>
-                <div className=" -inset-6 -mb-0.5 left-1 p-3 pb-0 relative">
+                <div className=" -inset-8 -mb-0.5 -mb-0.5 left-1 p-3 pb-0 relative">
               
                   <div className="text-xs tracking-[0.4px]">{p.sku}</div>
                   <div className="text-sm text-muted-foreground mt-1">{p.name}</div>
@@ -759,7 +759,7 @@ export default function Catalog() {
     v === 0 ? (
       <div className="h-full flex flex-col items-center justify-center text-center select-none">
         <div className="relative mb-6">
-          <div className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-amber-200/60 to-rose-200/60 blur-xl" />
+          <div className="absolute -inset-8 -mb-0.5 rounded-[2rem] bg-gradient-to-br from-amber-200/60 to-rose-200/60 blur-xl" />
           <div className="relative rounded-[2rem] px-10 py-8 ring-1 ring-border bg-gradient-to-br from-amber-50 to-rose-50">
             <div className="mb-3 flex items-center justify-center gap-3 text-primary">
               <Gem className="h-7 w-7" />
@@ -865,7 +865,7 @@ export default function Catalog() {
   return (
     <main
       className={cn(
-        "min-h-screen w-full bg-gradient-to-br from-rose-50 via-amber-50 to-rose-100",
+        "min-h-screen w-full overflow-hidden bg-gradient-to-br from-rose-50 via-amber-50 to-rose-100",
         "dark:from-[hsl(24_30%_7%)] dark:via-[hsl(24_22%_10%)] dark:to-[hsl(20_20%_8%)]",
       )}
     >
@@ -882,34 +882,21 @@ export default function Catalog() {
         </div>
 
         <div className="flex items-center gap-3 md:gap-6">
-          {view > 0 && (
+          <div className={cn(view === 0 ? "invisible" : undefined)}>
             <ArrowButton
               direction="left"
               onClick={startFlipPrev}
               disabled={view === 0 || flipping !== "none"}
             />
-          )}
+          </div>
 
           <div className="relative hidden md:flex w-[900px] max-w-[90vw] rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 h-[var(--page-h)]">
-            {view !== 0 && (
-              <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
-            )}
+            <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
 
-            {view === 0 ? (
-              <div className="flex w-full">
-                {/* Left side - blank on cover */}
-                <div className="w-1/2"></div>
-                {/* Right side - cover content */}
-                <PageShell side="right">
-                  {rightContentFor(view)}
-                </PageShell>
-              </div>
-            ) : (
-              <>
-                <PageShell side="left">{leftContentFor(view)}</PageShell>
-                <PageShell side="right">{rightContentFor(view)}</PageShell>
-              </>
-            )}
+            <>
+              <PageShell side="left">{view === 0 ? null : leftContentFor(view)}</PageShell>
+              <PageShell side="right">{rightContentFor(view)}</PageShell>
+            </>
 
             {flipping === "right" && (
               <FlipOverlay
@@ -965,7 +952,7 @@ export default function Catalog() {
           <ArrowButton
             direction="right"
             onClick={startFlipNext}
-            disabled={(view === 4 && (view < 3 || currentPage >= totalPages)) || (view === 2 && !selectedCategory) || flipping !== "none"}
+            disabled={((view >= 3) && currentPage >= totalPages) || (view === 2 && !selectedCategory) || flipping !== "none"}
           />
         </div>
 
