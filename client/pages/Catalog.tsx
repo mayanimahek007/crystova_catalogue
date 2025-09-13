@@ -49,15 +49,18 @@ function PageShell({
   children,
   side,
   full,
+  noPadding,
 }: {
   children: React.ReactNode;
   side: "left" | "right";
   full?: boolean;
+  noPadding?: boolean;
 }) {
   return (
     <div
       className={cn(
-        "relative flex-1 overflow-hidden rounded-2xl bg-card p-6 md:p-8",
+        "relative flex-1 overflow-hidden rounded-2xl bg-card",
+        noPadding ? "p-0" : "p-6 md:p-8",
         "shadow-[inset_0_0_0_1px_hsl(var(--border)),0_30px_80px_-20px_rgba(0,0,0,0.25)]",
         full
           ? "rounded-2xl"
@@ -266,7 +269,7 @@ export default function Catalog() {
   const LeftImage = (
     <div className="h-full relative">
       <img
-        src="https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1400&auto=format&fit=crop"
+        src="/cate.png"
         alt="Jewelry"
         className="absolute inset-0 h-full w-full object-cover"
         loading="lazy"
@@ -947,7 +950,7 @@ export default function Catalog() {
               <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
 
               <>
-                <PageShell side="left">{view === 0 ? null : leftContentFor(view)}</PageShell>
+                <PageShell side="left" noPadding={view === 1}>{view === 0 ? null : leftContentFor(view)}</PageShell>
                 <PageShell side="right">{rightContentFor(view)}</PageShell>
               </>
 
