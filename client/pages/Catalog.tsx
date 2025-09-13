@@ -521,10 +521,10 @@ export default function Catalog() {
                   <img
                     src={cat.imageUrl ? `https://catalogue-api.crystovajewels.com${cat.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
                     alt={cat.name}
-                    className="absolute inset-0 h-full w-full object-cover"
+                    className="absolute inset-0 h-full w-full object-contain"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+                  <div className=" " />
                   <div className="absolute bottom-0 left-0 right-0 p-2">
                     <div className="inline-flex items-center rounded-md bg-card/90 backdrop-blur px-2 py-1 text-xs ring-1 ring-border text-foreground">
                       {cat.name}
@@ -685,7 +685,7 @@ export default function Catalog() {
                    className="absolute inset-0 h-full w-full object-contain"
                    loading="lazy"
                  />
-                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+                 <div className=" " />
                  <div className="absolute bottom-0 left-0 right-0 p-2">
                    <div className="inline-flex items-center rounded-md bg-card/90 backdrop-blur px-2 py-1 text-xs ring-1 ring-border text-foreground">
                      {cat.name}
@@ -731,10 +731,10 @@ export default function Catalog() {
                  <img
                    src={cat.imageUrl ? `https://catalogue-api.crystovajewels.com${cat.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
                    alt={cat.name}
-                   className="absolute inset-0 h-full w-full object-cover"
+                   className="absolute inset-0 h-full w-full object-contain"
                    loading="lazy"
                  />
-                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+                 <div className=" " />
                  <div className="absolute bottom-0 left-0 right-0 p-2">
                    <div className="inline-flex items-center rounded-md bg-card/90 backdrop-blur px-2 py-1 text-xs ring-1 ring-border text-foreground">
                      {cat.name}
