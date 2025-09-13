@@ -4,15 +4,16 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { usePageFlipAudio } from "../hooks/usePageFlipAudio";
 
 type Category = { _id: string; name: string; imageUrl?: string; description?: string };
-type Product = { 
-  _id: string; 
-  name: string; 
-  sku: string; 
-  price: number; 
-  imageUrl?: string; 
-  videoUrl?: string; 
+type Product = {
+  _id: string;
+  name: string;
+  sku: string;
+  price: number;
+  imageUrl?: string;
+  videoUrl?: string;
   categoryname: string;
   category: Category;
 };
@@ -186,7 +187,10 @@ export default function Catalog() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const flipGuard = useRef(false);
-  
+
+  // Page flip audio hook
+  const { playPageFlipSound, AudioComponent } = usePageFlipAudio();
+
   const PRODUCTS_PER_PAGE = 6; // 3 products per side (left + right)
 
   const clamp = (v: number) => Math.max(0, Math.min(v, 4));
@@ -261,8 +265,19 @@ export default function Catalog() {
         </span>
       </div>
       <h1 className="font-brand text-5xl md:text-6xl lg:text-7xl font-semibold bg-gradient-to-br from-primary to-amber-500 bg-clip-text text-transparent">
-        Crystova
-      </h1>
+      <div className="flex justify-center" style={{
+            marginBottom: '20px'
+          }}>
+            <img 
+              src="/crystova.png" 
+              alt="CRYSTOVA" 
+              style={{
+                height: '80px',
+                width: 'auto',
+                maxWidth: '300px'
+              }}
+            />
+          </div>      </h1>
       <p className="mt-4 max-w-sm text-sm md:text-base text-muted-foreground">
         A personal log for your gems, gold, and timeless keepsakes. Keep every
         sparkle remembered.
@@ -386,9 +401,9 @@ export default function Catalog() {
                 <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
               </div>
               <div className=" -inset-8 -mb-0.5 -mb-0.5 left-1 p-3 pb-0 relative">
-            
+
                 <div className="text-xs tracking-[0.4px]">{p.sku}</div>
-               
+
                 <div className="mt-3">
                   <Button
                     className="w-full"
@@ -464,9 +479,9 @@ export default function Catalog() {
                 <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
               </div>
               <div className=" -inset-8 -mb-0.5 -mb-0.5 left-1 p-3 pb-0 relative">
-            
+
                 <div className="text-xs tracking-[0.4px]">{p.sku}</div>
-               
+
                 <div className="mt-3">
                   <Button
                     className="w-full"
@@ -513,9 +528,8 @@ export default function Catalog() {
               <button
                 key={cat._id}
                 onClick={() => onSelectCategory(cat._id)}
-                className={`group relative overflow-hidden rounded-lg ring-1 ring-border shadow hover:shadow-md transition-all ${
-                  selectedCategory?._id === cat._id ? 'ring-primary bg-primary/5' : ''
-                }`}
+                className={`group relative overflow-hidden rounded-lg ring-1 ring-border shadow hover:shadow-md transition-all ${selectedCategory?._id === cat._id ? 'ring-primary bg-primary/5' : ''
+                  }`}
               >
                 <div className="relative aspect-square w-full">
                   <img
@@ -614,7 +628,7 @@ export default function Catalog() {
                   <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
                 </div>
                 <div className=" -inset-8 -mb-0.5 -mb-0.5 left-1 p-3 pb-0 relative">
-              
+
                   <div className="text-xs tracking-[0.4px]">{p.sku}</div>
                   <div className="text-sm text-muted-foreground mt-1">{p.name}</div>
                   {p.price && (
@@ -671,29 +685,29 @@ export default function Catalog() {
           <div className="text-muted-foreground">Loading categories...</div>
         </div>
       ) : (
-         <div className="grid grid-cols-2 gap-3">
-           {leftCategories.map((cat) => (
-             <button
-               key={cat._id}
-               onClick={() => onSelectCategory(cat._id)}
-               className="group relative overflow-hidden rounded-lg ring-1 ring-border shadow hover:shadow-md transition-all"
-             >
-               <div className="relative aspect-square w-full">
-                 <img
-                   src={cat.imageUrl ? `https://catalogue-api.crystovajewels.com${cat.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
-                   alt={cat.name}
-                   className="absolute inset-0 h-full w-full object-contain"
-                   loading="lazy"
-                 />
-                 <div className=" " />
-                 <div className="absolute bottom-0 left-0 right-0 p-2">
-                   <div className="inline-flex items-center rounded-md bg-card/90 backdrop-blur px-2 py-1 text-xs ring-1 ring-border text-foreground">
-                     {cat.name}
-                   </div>
-                 </div>
-               </div>
-             </button>
-           ))}
+        <div className="grid grid-cols-2 gap-3">
+          {leftCategories.map((cat) => (
+            <button
+              key={cat._id}
+              onClick={() => onSelectCategory(cat._id)}
+              className="group relative overflow-hidden rounded-lg ring-1 ring-border shadow hover:shadow-md transition-all"
+            >
+              <div className="relative aspect-square w-full">
+                <img
+                  src={cat.imageUrl ? `https://catalogue-api.crystovajewels.com${cat.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
+                  alt={cat.name}
+                  className="absolute inset-0 h-full w-full object-contain"
+                  loading="lazy"
+                />
+                <div className=" " />
+                <div className="absolute bottom-0 left-0 right-0 p-2">
+                  <div className="inline-flex items-center rounded-md bg-card/90 backdrop-blur px-2 py-1 text-xs ring-1 ring-border text-foreground">
+                    {cat.name}
+                  </div>
+                </div>
+              </div>
+            </button>
+          ))}
           {leftCategories.length === 0 && !loading && (
             <div className="flex items-center justify-center h-32 text-muted-foreground">
               No categories found
@@ -720,29 +734,29 @@ export default function Catalog() {
           <div className="text-muted-foreground">Loading categories...</div>
         </div>
       ) : (
-         <div className="grid grid-cols-2 gap-3">
-           {rightCategories.map((cat) => (
-             <button
-               key={cat._id}
-               onClick={() => onSelectCategory(cat._id)}
-               className="group relative overflow-hidden rounded-lg ring-1 ring-border shadow hover:shadow-md transition-all"
-             >
-               <div className="relative aspect-square w-full">
-                 <img
-                   src={cat.imageUrl ? `https://catalogue-api.crystovajewels.com${cat.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
-                   alt={cat.name}
-                   className="absolute inset-0 h-full w-full object-contain"
-                   loading="lazy"
-                 />
-                 <div className=" " />
-                 <div className="absolute bottom-0 left-0 right-0 p-2">
-                   <div className="inline-flex items-center rounded-md bg-card/90 backdrop-blur px-2 py-1 text-xs ring-1 ring-border text-foreground">
-                     {cat.name}
-                   </div>
-                 </div>
-               </div>
-             </button>
-           ))}
+        <div className="grid grid-cols-2 gap-3">
+          {rightCategories.map((cat) => (
+            <button
+              key={cat._id}
+              onClick={() => onSelectCategory(cat._id)}
+              className="group relative overflow-hidden rounded-lg ring-1 ring-border shadow hover:shadow-md transition-all"
+            >
+              <div className="relative aspect-square w-full">
+                <img
+                  src={cat.imageUrl ? `https://catalogue-api.crystovajewels.com${cat.imageUrl}` : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"}
+                  alt={cat.name}
+                  className="absolute inset-0 h-full w-full object-contain"
+                  loading="lazy"
+                />
+                <div className=" " />
+                <div className="absolute bottom-0 left-0 right-0 p-2">
+                  <div className="inline-flex items-center rounded-md bg-card/90 backdrop-blur px-2 py-1 text-xs ring-1 ring-border text-foreground">
+                    {cat.name}
+                  </div>
+                </div>
+              </div>
+            </button>
+          ))}
           {rightCategories.length === 0 && !loading && (
             <div className="flex items-center justify-center h-32 text-muted-foreground">
               No categories found
@@ -767,8 +781,18 @@ export default function Catalog() {
                 Jewelry Diary
               </span>
             </div>
-            <div className="font-brand text-5xl md:text-6xl font-semibold bg-gradient-to-br from-primary to-amber-500 bg-clip-text text-transparent">
-              Crystova
+            <div className="flex justify-center" style={{
+              marginBottom: '20px'
+            }}>
+              <img
+                src="/crystova.png"
+                alt="CRYSTOVA"
+                style={{
+                  height: '80px',
+                  width: 'auto',
+                  maxWidth: '300px'
+                }}
+              />
             </div>
           </div>
         </div>
@@ -785,12 +809,12 @@ export default function Catalog() {
   const onSelectCategory = (categoryId: string) => {
     const cat = categories.find((c) => c._id === categoryId) || null;
     setSelectedCategory(cat);
-    
+
     // Fetch products for the selected category
     if (cat) {
       fetchProductsByCategory(cat.name);
     }
-    
+
     // Always auto-flip to products page when category is selected
     if (view < 3) {
       startFlipNext(true); // Pass true to bypass category check
@@ -799,7 +823,10 @@ export default function Catalog() {
 
   const startFlipPrev = () => {
     if (view === 0 || flipping !== "none") return;
-    
+
+    // Play page flip sound
+    playPageFlipSound();
+
     // If we're on a product page and not on the first product page, flip to previous product page
     if (view >= 3 && currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -807,7 +834,7 @@ export default function Catalog() {
       setFlipping("left");
       return;
     }
-    
+
     // Otherwise, flip to previous main page
     setFlipDir("prev");
     setFlipping(view === 1 ? "single" : "left");
@@ -815,10 +842,13 @@ export default function Catalog() {
 
   const startFlipNext = (bypassCategoryCheck = false) => {
     if (view >= 4 || flipping !== "none") return;
-    
+
     // Don't allow flipping to product pages if no category is selected (unless bypassed)
     if (view === 2 && !selectedCategory && !bypassCategoryCheck) return;
-    
+
+    // Play page flip sound
+    playPageFlipSound();
+
     // If we're on a product page and there are more product pages, flip to next product page
     if (view >= 3 && currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
@@ -826,7 +856,7 @@ export default function Catalog() {
       setFlipping("right");
       return;
     }
-    
+
     // Otherwise, flip to next main page
     setFlipDir("next");
     setFlipping(view === 0 ? "single" : "right");
@@ -863,103 +893,106 @@ export default function Catalog() {
   }, []);
 
   return (
-    <main
-      className={cn(
-        "min-h-screen w-full overflow-hidden bg-gradient-to-br from-rose-50 via-amber-50 to-rose-100",
-        "dark:from-[hsl(24_30%_7%)] dark:via-[hsl(24_22%_10%)] dark:to-[hsl(20_20%_8%)]",
-      )}
-    >
-      <div
-        className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4"
-        style={{
-          ["--page-h" as any]: "clamp(520px, 72vh, 680px)",
-          perspective: 1600,
-        }}
+    <>
+      <AudioComponent />
+      <main
+        className={cn(
+          "min-h-screen w-full overflow-hidden bg-gradient-to-br from-rose-50 via-amber-50 to-rose-100",
+          "dark:from-[hsl(24_30%_7%)] dark:via-[hsl(24_22%_10%)] dark:to-[hsl(20_20%_8%)]",
+        )}
       >
-        <div className="pointer-events-none absolute inset-0 -z-10 opacity-40 blur-3xl">
-          <div className="absolute left-10 top-20 h-40 w-40 rounded-full bg-amber-300/40" />
-          <div className="absolute bottom-20 right-10 h-48 w-48 rounded-full bg-rose-300/40" />
-        </div>
+        <div
+          className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4"
+          style={{
+            ["--page-h" as any]: "clamp(520px, 72vh, 680px)",
+            perspective: 1600,
+          }}
+        >
+          <div className="pointer-events-none absolute inset-0 -z-10 opacity-40 blur-3xl">
+            <div className="absolute left-10 top-20 h-40 w-40 rounded-full bg-amber-300/40" />
+            <div className="absolute bottom-20 right-10 h-48 w-48 rounded-full bg-rose-300/40" />
+          </div>
 
-        <div className="flex items-center gap-3 md:gap-6">
-          <div className={cn(view === 0 ? "invisible" : undefined)}>
+          <div className="flex items-center gap-3 md:gap-6">
+            <div className={cn(view === 0 ? "invisible" : undefined)}>
+              <ArrowButton
+                direction="left"
+                onClick={startFlipPrev}
+                disabled={view === 0 || flipping !== "none"}
+              />
+            </div>
+
+            <div className="relative hidden md:flex w-[900px] max-w-[90vw] rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 h-[var(--page-h)]">
+              <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
+
+              <>
+                <PageShell side="left">{view === 0 ? null : leftContentFor(view)}</PageShell>
+                <PageShell side="right">{rightContentFor(view)}</PageShell>
+              </>
+
+              {flipping === "right" && (
+                <FlipOverlay
+                  side="right"
+                  dir={flipDir}
+                  front={rightContentFor(view)}
+                  back={rightContentFor(clamp(view + 1))}
+                  onComplete={() => completeFlip(1)}
+                />
+              )}
+
+              {flipping === "left" && (
+                <FlipOverlay
+                  side="left"
+                  dir={flipDir}
+                  front={leftContentFor(clamp(view - 1))}
+                  back={leftContentFor(view)}
+                  onComplete={() => completeFlip(-1)}
+                />
+              )}
+
+              {flipping === "single" && (
+                <FlipOverlay
+                  side="single"
+                  dir={flipDir}
+                  front={rightContentFor(view)}
+                  back={rightContentFor(
+                    clamp(view + (flipDir === "next" ? 1 : -1)),
+                  )}
+                  onComplete={() => completeFlip(flipDir === "next" ? 1 : -1)}
+                />
+              )}
+            </div>
+
+            <div
+              className="md:hidden w-full max-w-xl rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 p-6 h-[var(--page-h)] overflow-hidden"
+              style={{ perspective: 1600 }}
+            >
+              <div className="h-full">{rightContentFor(view)}</div>
+              {flipping !== "none" && (
+                <FlipOverlay
+                  side="single"
+                  dir={flipDir}
+                  front={rightContentFor(view)}
+                  back={rightContentFor(
+                    clamp(view + (flipDir === "next" ? 1 : -1)),
+                  )}
+                  onComplete={() => completeFlip(flipDir === "next" ? 1 : -1)}
+                />
+              )}
+            </div>
+
             <ArrowButton
-              direction="left"
-              onClick={startFlipPrev}
-              disabled={view === 0 || flipping !== "none"}
+              direction="right"
+              onClick={startFlipNext}
+              disabled={((view >= 3) && currentPage >= totalPages) || (view === 2 && !selectedCategory) || flipping !== "none"}
             />
           </div>
 
-          <div className="relative hidden md:flex w-[900px] max-w-[90vw] rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 h-[var(--page-h)]">
-            <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
-
-            <>
-              <PageShell side="left">{view === 0 ? null : leftContentFor(view)}</PageShell>
-              <PageShell side="right">{rightContentFor(view)}</PageShell>
-            </>
-
-            {flipping === "right" && (
-              <FlipOverlay
-                side="right"
-                dir={flipDir}
-                front={rightContentFor(view)}
-                back={rightContentFor(clamp(view + 1))}
-                onComplete={() => completeFlip(1)}
-              />
-            )}
-
-            {flipping === "left" && (
-              <FlipOverlay
-                side="left"
-                dir={flipDir}
-                front={leftContentFor(clamp(view - 1))}
-                back={leftContentFor(view)}
-                onComplete={() => completeFlip(-1)}
-              />
-            )}
-
-            {flipping === "single" && (
-              <FlipOverlay
-                side="single"
-                dir={flipDir}
-                front={rightContentFor(view)}
-                back={rightContentFor(
-                  clamp(view + (flipDir === "next" ? 1 : -1)),
-                )}
-                onComplete={() => completeFlip(flipDir === "next" ? 1 : -1)}
-              />
-            )}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-card/80 px-4 py-2 text-sm shadow ring-1 ring-border">
+            Page {view + 1} / {!selectedCategory ? 3 : (view < 3 ? 4 : 3 + totalPages)}
           </div>
-
-          <div
-            className="md:hidden w-full max-w-xl rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 p-6 h-[var(--page-h)] overflow-hidden"
-            style={{ perspective: 1600 }}
-          >
-            <div className="h-full">{rightContentFor(view)}</div>
-            {flipping !== "none" && (
-              <FlipOverlay
-                side="single"
-                dir={flipDir}
-                front={rightContentFor(view)}
-                back={rightContentFor(
-                  clamp(view + (flipDir === "next" ? 1 : -1)),
-                )}
-                onComplete={() => completeFlip(flipDir === "next" ? 1 : -1)}
-              />
-            )}
-          </div>
-
-          <ArrowButton
-            direction="right"
-            onClick={startFlipNext}
-            disabled={((view >= 3) && currentPage >= totalPages) || (view === 2 && !selectedCategory) || flipping !== "none"}
-          />
         </div>
-
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-card/80 px-4 py-2 text-sm shadow ring-1 ring-border">
-          Page {view + 1} / {!selectedCategory ? 3 : (view < 3 ? 4 : 3 + totalPages)}
-        </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }

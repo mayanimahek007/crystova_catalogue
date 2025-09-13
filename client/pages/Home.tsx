@@ -23,14 +23,24 @@ export default function Home() {
                     Jewelry Diary
                   </span>
                 </div>
-                <div className="font-brand text-6xl md:text-7xl lg:text-8xl font-semibold bg-gradient-to-br from-primary to-amber-500 bg-clip-text text-transparent">
-                  Crystova
-                </div>
+                <div className="flex justify-center" style={{
+            marginBottom: '20px'
+          }}>
+            <img 
+              src="/crystova.png" 
+              alt="CRYSTOVA" 
+              style={{
+                height: '80px',
+                width: 'auto',
+                maxWidth: '300px'
+              }}
+            />
+          </div>
                 <p className="mt-6 text-lg text-muted-foreground">
                   Lab Grown Diamond Jewelry
                 </p>
                 <p className="mt-2 text-sm text-muted-foreground uppercase tracking-wider">
-                  Wholesale catalog 2024
+                  Wholesale catalog 2025
                 </p>
               </div>
             </div>
