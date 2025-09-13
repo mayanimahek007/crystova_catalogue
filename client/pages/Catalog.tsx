@@ -190,6 +190,25 @@ export default function Catalog() {
 
   // Page flip audio hook
   const { playPageFlipSound, AudioComponent } = usePageFlipAudio();
+  
+  // Simple audio function for testing
+  const playSimpleSound = () => {
+    try {
+      console.log('Trying to play audio...');
+      const audio = new Audio('/audio/page-flip2.mp3'); // Try different file
+      audio.volume = 0.8;
+      audio.play().then(() => {
+        console.log('Audio played successfully!');
+      }).catch(err => {
+        console.log('Simple audio failed:', err);
+        // Try another file
+        const audio2 = new Audio('/audio/page-flip22.mp3');
+        audio2.play().catch(err2 => console.log('Second audio also failed:', err2));
+      });
+    } catch (error) {
+      console.log('Error creating audio:', error);
+    }
+  };
 
   const PRODUCTS_PER_PAGE = 6; // 3 products per side (left + right)
 
@@ -826,6 +845,7 @@ export default function Catalog() {
 
     // Play page flip sound
     playPageFlipSound();
+    playSimpleSound(); // Also try simple approach
 
     // If we're on a product page and not on the first product page, flip to previous product page
     if (view >= 3 && currentPage > 1) {
@@ -848,6 +868,7 @@ export default function Catalog() {
 
     // Play page flip sound
     playPageFlipSound();
+    playSimpleSound(); // Also try simple approach
 
     // If we're on a product page and there are more product pages, flip to next product page
     if (view >= 3 && currentPage < totalPages) {
@@ -990,7 +1011,7 @@ export default function Catalog() {
 
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-card/80 px-4 py-2 text-sm shadow ring-1 ring-border">
             Page {view + 1} / {!selectedCategory ? 3 : (view < 3 ? 4 : 3 + totalPages)}
-          </div>
+        </div>
         </div>
       </main>
     </>
