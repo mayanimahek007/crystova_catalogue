@@ -119,7 +119,7 @@ import { MyRouteResponse } from "@shared/api"; // Optional: for type safety
 
 export const handleMyRoute: RequestHandler = (req, res) => {
   const response: MyRouteResponse = {
-    message: 'Hello from my endpoint!'
+    message: 'Crystova Jewels Catalogue'
   };
   res.json(response);
 };
