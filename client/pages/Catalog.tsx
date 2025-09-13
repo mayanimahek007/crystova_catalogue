@@ -279,31 +279,42 @@ export default function Catalog() {
   );
 
   const RightWelcome = (
-    <div className="flex h-full flex-col items-center justify-center text-center select-none">
-      <div className="mb-4 flex items-center gap-3 text-primary">
-        <Gem className="h-7 w-7" />
-        <span className="tracking-[0.35em] text-xs uppercase text-muted-foreground">
-          Jewelry Diary
-        </span>
-      </div>
-      <h1 className="font-brand text-5xl md:text-6xl lg:text-7xl font-semibold bg-gradient-to-br from-primary to-amber-500 bg-clip-text text-transparent">
-      <div className="flex justify-center" style={{
-            marginBottom: '20px'
-          }}>
-            <img 
+    <div className="flex h-full flex-col justify-center text-left select-none px-8">
+      {/* Logo */}
+      <div className="mb-6">
+        <div className="flex justify-center items-center gap-2 mb-2">
+ <img 
               src="/crystova.png" 
               alt="CRYSTOVA" 
               style={{
-                height: '80px',
+                height: '50px',
                 width: 'auto',
                 maxWidth: '300px'
               }}
-            />
-          </div>      </h1>
-      <p className="mt-4 max-w-sm text-sm md:text-base text-muted-foreground">
-        A personal log for your gems, gold, and timeless keepsakes. Keep every
-        sparkle remembered.
-      </p>
+            />        
+        </div>
+      </div>
+      
+      {/* Tagline */}
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold text-gray-800 uppercase tracking-wide">
+          WORLD'S LARGEST GROWER OF CVD LAB GROWN DIAMONDS
+        </h2>
+      </div>
+      
+      {/* Main Content */}
+      <div className="mb-6">
+        <p className="text-sm text-gray-700 leading-relaxed">
+          Welcome to the world of Crystova Jewels, where brilliance meets craftsmanship. With a sprawling manufacturing facility spanning over 7,00,000 sq ft powered by a 25 MW solar plant and over 30+ years of experience, we redefine luxury through our exquisite diamonds and meticulously crafted jewelry. Explore the essence of elegance as we unveil our strengths and statistics that set us apart.
+        </p>
+      </div>
+      
+      {/* Quote */}
+      <div className="mt-auto">
+        <p className="text-sm text-gray-600 italic">
+          "Crystova Jewels: Crafting timeless elegance with exquisite designs, epitomizing beauty and sophistication for those who cherish the finer things in life."
+        </p>
+      </div>
     </div>
   );
 
@@ -793,32 +804,54 @@ export default function Catalog() {
     v === 1 ? LeftImage : v === 2 ? LeftCategoriesGrid : v >= 3 ? LeftProductsGrid : null;
   const rightContentFor = (v: number) =>
     v === 0 ? (
-      <div className="h-full flex flex-col items-center justify-center text-center select-none">
-        <div className="relative mb-6">
-          <div className="absolute -inset-8 -mb-0.5 rounded-[2rem] bg-gradient-to-br from-amber-200/60 to-rose-200/60 blur-xl" />
-          <div className="relative rounded-[2rem] px-10 py-8 ring-1 ring-border bg-gradient-to-br from-amber-50 to-rose-50">
-            <div className="mb-3 flex items-center justify-center gap-3 text-primary">
-              <Gem className="h-7 w-7" />
-              <span className="tracking-[0.35em] text-xs uppercase text-muted-foreground">
-                Jewelry Diary
-              </span>
-            </div>
-            <div className="flex justify-center" style={{
-              marginBottom: '20px'
-            }}>
-              <img
-                src="/crystova.png"
-                alt="CRYSTOVA"
-                style={{
-                  height: '80px',
-                  width: 'auto',
-                  maxWidth: '300px'
-                }}
-              />
-            </div>
+      <div className="h-full relative">
+        {/* Background jewelry image */}
+        <div className="absolute inset-0">
+          <img
+            src="/3.png"
+            alt="Jewelry Background"
+            className="absolute inset-0 h-full w-full object-cover"
+            loading="lazy"
+          />
+        </div>
+        
+        {/* Background overlay */}
+        
+        {/* Grid pattern */}
+        <div className="absolute top-16 left-24 z-10">
+          <div className="grid grid-cols-5 gap-1">
+            {Array.from({ length: 25 }).map((_, i) => (
+              <div key={i} className="w-1 h-1 bg-gray-600 rounded-full"></div>
+            ))}
           </div>
         </div>
-        <p className="text-muted-foreground">Flip to open the diary</p>
+        
+        {/* Main content */}
+        <div className="relative h-full flex flex-col items-center justify-center text-center z-10">
+          {/* Brand name */}
+          <div className="mb-4">
+          <div className="flex justify-center items-center gap-2 mb-2">
+ <img 
+              src="/crystova.png" 
+              alt="CRYSTOVA" 
+              style={{
+                height: '100px',
+                width: 'auto',
+                maxWidth: '380px'
+              }}
+            />          
+        </div>
+           
+          </div>
+          
+          {/* Bottom text */}
+          <div className="absolute bottom-16 left-20">
+            <p className="text-sm text-gray-900 font-light text-start font-serif font-bold">
+              Wholesale <br /> 
+              catalog 2025
+            </p>
+          </div>
+        </div>
       </div>
     ) : v === 1 ? (
       RightWelcome
@@ -947,12 +980,20 @@ export default function Catalog() {
             </div>
 
             <div className="relative hidden md:flex w-[900px] max-w-[90vw] rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 h-[var(--page-h)]">
-              <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
+              {view !== 0 && (
+                <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
+              )}
 
-              <>
-                <PageShell side="left" noPadding={view === 1}>{view === 0 ? null : leftContentFor(view)}</PageShell>
-                <PageShell side="right">{rightContentFor(view)}</PageShell>
-              </>
+              {view === 0 ? (
+                // Closed book - single page covering the entire width
+                <PageShell side="right" full={true} noPadding={true}>{rightContentFor(view)}</PageShell>
+              ) : (
+                // Open book - two pages
+                <>
+                  <PageShell side="left" noPadding={view === 1}>{leftContentFor(view)}</PageShell>
+                  <PageShell side="right">{rightContentFor(view)}</PageShell>
+                </>
+              )}
 
               {flipping === "right" && (
                 <FlipOverlay
