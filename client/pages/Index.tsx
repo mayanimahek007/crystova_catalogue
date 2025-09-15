@@ -136,15 +136,27 @@ function PageShell({
   children,
   side,
   full,
+  noPadding,
+  pageNumber,
 }: {
   children: React.ReactNode;
   side: "left" | "right";
   full?: boolean;
+  noPadding?: boolean;
+  pageNumber?: number | null;
 }) {
+  const computedNoPadding =
+    typeof noPadding === "boolean"
+      ? noPadding
+      : typeof pageNumber === "number"
+      ? pageNumber === 1 || pageNumber === 2 || pageNumber === 3
+      : false;
+
   return (
     <div
       className={cn(
-        "relative flex-1 overflow-hidden rounded-2xl bg-card p-6 md:p-8",
+        "relative flex-1 overflow-hidden rounded-2xl bg-card",
+        computedNoPadding ? "p-0" : "p-6 md:p-8",
         "shadow-[inset_0_0_0_1px_hsl(var(--border)),0_30px_80px_-20px_rgba(0,0,0,0.25)]",
         full
           ? "rounded-2xl"
@@ -162,7 +174,7 @@ function PageShell({
             "repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.5) 29px)",
         }}
       />
-      <div className="h-full overflow-auto pr-1">{children}</div>
+      <div className="h-full overflow-auto pr-1" style={{ scrollbarGutter: 'stable' }}>{children}</div>
       <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-tr from-black/0 via-black/0 to-black/5" />
     </div>
   );
@@ -174,12 +186,16 @@ function FlipOverlay({
   back,
   dir,
   onComplete,
+  frontPageNumber,
+  backPageNumber,
 }: {
   side: "left" | "right" | "single";
   front: React.ReactNode;
   back: React.ReactNode;
   dir: "next" | "prev";
   onComplete: () => void;
+  frontPageNumber?: number | null;
+  backPageNumber?: number | null;
 }) {
   const isRight = side === "right";
   const isLeft = side === "left";
@@ -192,10 +208,14 @@ function FlipOverlay({
         ? "left center"
         : "right center";
   const exit = isRight || (isSingle && dir === "next") ? -180 : 180;
+
+  const pagePaddingClass = (n?: number | null) =>
+    typeof n === "number" && (n === 1 || n === 2 || n === 3) ? "p-0" : "p-6 md:p-8";
+
   return (
     <div
       className={cn(
-        "absolute inset-y-0 z-20",
+        "absolute inset-y-0 z-30",
         isRight && "left-1/2 w-1/2",
         isLeft && "right-1/2 w-1/2",
         isSingle && "left-0 right-0",
@@ -203,18 +223,20 @@ function FlipOverlay({
       style={{ perspective: 1600 }}
     >
       <motion.div
+        // ensure remount when side/dir changes to avoid stale animation state
+        key={`${side}-${dir}`}
         initial={{ rotateY: 0, boxShadow: "0 20px 60px rgba(0,0,0,0.20)" }}
         animate={{ rotateY: exit, boxShadow: "0 10px 30px rgba(0,0,0,0.15)" }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        style={{ transformOrigin: origin, transformStyle: "preserve-3d" }}
+        style={{ transformOrigin: origin, transformStyle: "preserve-3d", backfaceVisibility: 'hidden', willChange: 'transform' }}
         onAnimationComplete={onComplete}
         className={cn(
-          "relative h-full rounded-2xl bg-card ring-1 ring-border",
+          "absolute inset-0 h-full w-full rounded-2xl bg-card ring-1 ring-border",
           isRight ? "rounded-l-none" : isLeft ? "rounded-r-none" : "",
         )}
       >
         <div className="absolute inset-0 h-full w-full overflow-hidden [backface-visibility:hidden]">
-          <div className="h-full p-6 md:p-8">
+          <div className={cn("h-full", pagePaddingClass(frontPageNumber))}>
             <div
               className="pointer-events-none absolute inset-0 opacity-[0.035]"
               style={{
@@ -222,7 +244,7 @@ function FlipOverlay({
                   "repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.5) 29px)",
               }}
             />
-            <div className="h-full overflow-auto pr-1">{front}</div>
+            <div className="h-full overflow-auto pr-1" style={{ scrollbarGutter: 'stable' }}>{front}</div>
           </div>
           <div
             className={cn(
@@ -234,7 +256,7 @@ function FlipOverlay({
           />
         </div>
         <div className="absolute inset-0 h-full w-full overflow-hidden [transform:rotateY(180deg)] [backface-visibility:hidden]">
-          <div className="h-full p-6 md:p-8">
+          <div className={cn("h-full", pagePaddingClass(backPageNumber))}>
             <div
               className="pointer-events-none absolute inset-0 opacity-[0.035]"
               style={{
@@ -242,7 +264,7 @@ function FlipOverlay({
                   "repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.5) 29px)",
               }}
             />
-            <div className="h-full overflow-auto pr-1">{back}</div>
+            <div className="h-full overflow-auto pr-1" style={{ scrollbarGutter: 'stable' }}>{back}</div>
           </div>
           <div
             className={cn(
@@ -271,6 +293,14 @@ export default function Index() {
 
   const clamp = (v: number) => Math.max(0, Math.min(v, 3));
   const isCover = view === 0;
+
+  const getPageNumber = (v: number, side: "left" | "right"): number | null => {
+    if (v === 0) return side === "right" ? 1 : null;
+    if (v === 1) return side === "left" ? 2 : 3;
+    if (v === 2) return side === "left" ? 4 : 5;
+    // v >= 3
+    return side === "left" ? 6 : 7;
+  };
 
   const LeftImage = (
     <div className="h-full relative">
@@ -398,7 +428,7 @@ export default function Index() {
       <div className="h-full flex flex-col items-center justify-center text-center select-none">
         <div className="relative mb-6">
           <div className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-amber-200/60 to-rose-200/60 blur-xl" />
-          <div className="relative rounded-[2rem] px-10 py-8 ring-1 ring-border bg-gradient-to-br from-amber-50 to-rose-50">
+          <div className={cn("relative rounded-[2rem] ring-1 ring-border bg-gradient-to-br from-amber-50 to-rose-50", v === 0 ? "p-0" : "px-10 py-8")}>
             <div className="mb-3 flex items-center justify-center gap-3 text-primary">
               <Gem className="h-7 w-7" />
               <span className="tracking-[0.35em] text-xs uppercase text-muted-foreground">
@@ -489,21 +519,44 @@ export default function Index() {
             disabled={view === 0 || flipping !== "none"}
           />
 
-          <div className="relative hidden md:flex w-[900px] max-w-[90vw] rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 h-[var(--page-h)]">
+          <div className="relative hidden md:flex w-[900px] max-w-[90vw] rounded-2xl ring-1 ring-border shadow-2xl bg-transparent h-[var(--page-h)]">
             {view !== 0 && (
               <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
             )}
 
-            {view === 0 ? (
-              <PageShell side="right" full>
-                {rightContentFor(view)}
-              </PageShell>
-            ) : (
-              <>
-                <PageShell side="left">{leftContentFor(view)}</PageShell>
-                <PageShell side="right">{rightContentFor(view)}</PageShell>
-              </>
-            )}
+            {(() => {
+              const effectiveView =
+                flipping === "left" ? clamp(view - 1) : flipping === "right" ? clamp(view + 1) : view;
+
+              if (view === 0) {
+                const pn = 1;
+                const forceNoPad = pn === 1 || pn === 2 || (flipping !== "none" && getPageNumber(effectiveView, "right") === pn);
+                return (
+                  <PageShell side="right" full noPadding={forceNoPad} pageNumber={pn}>
+                    {rightContentFor(view)}
+                  </PageShell>
+                );
+              }
+
+              const leftPn = view === 1 ? 2 : getPageNumber(
+                flipping === "right" ? clamp(view + 1) : flipping === "left" ? clamp(view - 1) : view,
+                "left",
+              );
+              const rightPn = view === 1 ? 3 : getPageNumber(
+                flipping === "right" ? clamp(view + 1) : flipping === "left" ? clamp(view - 1) : view,
+                "right",
+              );
+
+              const leftForce = leftPn === 1 || leftPn === 2 || (flipping !== "none" && getPageNumber(effectiveView, "left") === leftPn);
+              const rightForce = rightPn === 1 || rightPn === 2 || (flipping !== "none" && getPageNumber(effectiveView, "right") === rightPn);
+
+              return (
+                <>
+                  <PageShell side="left" noPadding={leftForce} pageNumber={leftPn}>{leftContentFor(view)}</PageShell>
+                  <PageShell side="right" noPadding={rightForce} pageNumber={rightPn}>{rightContentFor(view)}</PageShell>
+                </>
+              );
+            })()}
 
             {flipping === "right" && (
               <FlipOverlay
@@ -511,6 +564,8 @@ export default function Index() {
                 dir={flipDir}
                 front={rightContentFor(view)}
                 back={rightContentFor(clamp(view + 1))}
+                frontPageNumber={getPageNumber(view, "right")}
+                backPageNumber={getPageNumber(clamp(view + 1), "right")}
                 onComplete={() => completeFlip(1)}
               />
             )}
@@ -521,6 +576,8 @@ export default function Index() {
                 dir={flipDir}
                 front={leftContentFor(clamp(view - 1))}
                 back={leftContentFor(view)}
+                frontPageNumber={getPageNumber(clamp(view - 1), "left")}
+                backPageNumber={getPageNumber(view, "left")}
                 onComplete={() => completeFlip(-1)}
               />
             )}
@@ -533,27 +590,43 @@ export default function Index() {
                 back={rightContentFor(
                   clamp(view + (flipDir === "next" ? 1 : -1)),
                 )}
+                frontPageNumber={getPageNumber(view, "right")}
+                backPageNumber={getPageNumber(clamp(view + (flipDir === "next" ? 1 : -1)), "right")}
                 onComplete={() => completeFlip(flipDir === "next" ? 1 : -1)}
               />
             )}
           </div>
 
           <div
-            className="md:hidden w-full max-w-xl rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 p-6 h-[var(--page-h)] overflow-hidden"
+            className="md:hidden w-full max-w-xl rounded-2xl ring-1 ring-border shadow-2xl bg-transparent p-6 h-[var(--page-h)] overflow-hidden"
             style={{ perspective: 1600 }}
           >
-            <div className="h-full">{rightContentFor(view)}</div>
-            {flipping !== "none" && (
-              <FlipOverlay
-                side="single"
-                dir={flipDir}
-                front={rightContentFor(view)}
-                back={rightContentFor(
-                  clamp(view + (flipDir === "next" ? 1 : -1)),
-                )}
-                onComplete={() => completeFlip(flipDir === "next" ? 1 : -1)}
-              />
-            )}
+            {(() => {
+              const effectiveView =
+                flipping === "left" ? clamp(view - 1) : flipping === "right" ? clamp(view + 1) : view;
+              const leftPn = getPageNumber(view, "left");
+              const rightPn = getPageNumber(view, "right");
+              const leftForce = leftPn === 1 || leftPn === 2 || (flipping !== "none" && getPageNumber(effectiveView, "left") === leftPn);
+              const rightForce = rightPn === 1 || rightPn === 2 || (flipping !== "none" && getPageNumber(effectiveView, "right") === rightPn);
+              return (
+                <>
+                  <div className={cn("h-full", rightForce ? "p-0" : "")}>{rightContentFor(view)}</div>
+                  {flipping !== "none" && (
+                    <FlipOverlay
+                      side="single"
+                      dir={flipDir}
+                      front={rightContentFor(view)}
+                      back={rightContentFor(
+                        clamp(view + (flipDir === "next" ? 1 : -1)),
+                      )}
+                      frontPageNumber={getPageNumber(view, "right")}
+                      backPageNumber={getPageNumber(clamp(view + (flipDir === "next" ? 1 : -1)), "right")}
+                      onComplete={() => completeFlip(flipDir === "next" ? 1 : -1)}
+                    />
+                  )}
+                </>
+              );
+            })()}
           </div>
 
           <ArrowButton
@@ -561,10 +634,6 @@ export default function Index() {
             onClick={startFlipNext}
             disabled={view === 3 || flipping !== "none"}
           />
-        </div>
-
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-card/80 px-4 py-2 text-sm shadow ring-1 ring-border">
-          Page {view + 1} / 4
         </div>
       </div>
     </main>
