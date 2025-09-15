@@ -23,10 +23,12 @@ function ArrowButton({
   direction,
   onClick,
   disabled,
+  className,
 }: {
   direction: "left" | "right";
   onClick: () => void;
   disabled?: boolean;
+  className?: string;
 }) {
   const Icon = direction === "left" ? ChevronLeft : ChevronRight;
   return (
@@ -38,6 +40,7 @@ function ArrowButton({
         "group rounded-full p-3 md:p-4 shadow-lg ring-1 ring-border transition-all",
         "bg-primary/10 hover:bg-primary/20 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed",
         "backdrop-blur supports-[backdrop-filter]:bg-primary/10",
+        className,
       )}
     >
       <Icon className="h-6 w-6 text-primary group-hover:scale-110 transition-transform" />
@@ -1004,7 +1007,7 @@ export default function Catalog() {
       <AudioComponent />
       <main
         className={cn(
-          "min-h-screen w-full overflow-hidden bg-gradient-to-br from-rose-50 via-amber-50 to-rose-100",
+          "min-h-screen w-full overflow-hidden md:overflow-visible bg-gradient-to-br from-rose-50 via-amber-50 to-rose-100",
           "dark:from-[hsl(24_30%_7%)] dark:via-[hsl(24_22%_10%)] dark:to-[hsl(20_20%_8%)]",
         )}
       >
@@ -1021,12 +1024,13 @@ export default function Catalog() {
             <div className="absolute bottom-20 right-10 h-48 w-48 rounded-full bg-rose-300/40" />
           </div>
 
-          <div className="flex items-center gap-3 md:gap-6">
+          <div className="flex items-center gap-3 md:gap-0 min-[1110px]:gap-6">
             <div className={cn(view === 0 ? "invisible" : undefined)}>
               <ArrowButton
                 direction="left"
                 onClick={startFlipPrev}
                 disabled={view === 0 || flipping !== "none"}
+                className="relative z-20 md:translate-x-1/2 min-[1110px]:translate-x-0"
               />
             </div>
 
@@ -1152,6 +1156,7 @@ export default function Catalog() {
               direction="right"
               onClick={startFlipNext}
               disabled={((view >= 3) && currentPage >= totalPages) || (view === 2 && !selectedCategory) || flipping !== "none"}
+              className="relative z-20 md:-translate-x-1/2 min-[1110px]:translate-x-0"
             />
           </div>
 
