@@ -180,6 +180,8 @@ export default function Catalog() {
   const [flipping, setFlipping] = useState<
     "none" | "left" | "right" | "single"
   >("none");
+  const [pagingFlip, setPagingFlip] = useState(false);
+  const [pendingPage, setPendingPage] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null,
   );
@@ -211,6 +213,21 @@ export default function Catalog() {
     } catch (error) {
       console.log('Error creating audio:', error);
     }
+  };
+
+  // WhatsApp function for Buy Now
+  const handleBuyNow = (product: Product) => {
+    const phoneNumber = "919099975424"; // WhatsApp number without + sign
+    const message = `Hello! I'm interested in purchasing this product:\n\nSKU: ${product.sku}\nCategory: ${product.categoryname}\n\nPlease provide more details and pricing.`;
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    
+    // Open WhatsApp in a new tab
+    window.open(whatsappUrl, '_blank');
+    
+    // Also show a toast notification
+    toast("Opening WhatsApp", { 
+      description: `SKU: ${product.sku}` 
+    });
   };
 
   const PRODUCTS_PER_PAGE = 6; // 3 products per side (left + right)
@@ -369,25 +386,28 @@ export default function Catalog() {
 
 
   // Get paginated products
-  const getPaginatedProducts = () => {
-    const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+  const getPaginatedProducts = (pageIndex?: number) => {
+    const page = pageIndex ?? currentPage;
+    const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
     const endIndex = startIndex + PRODUCTS_PER_PAGE;
     return products.slice(startIndex, endIndex);
   };
 
   // Get left side products (first 3 products)
-  const getLeftProducts = () => {
-    const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+  const getLeftProducts = (pageIndex?: number) => {
+    const page = pageIndex ?? currentPage;
+    const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
     return products.slice(startIndex, startIndex + 3);
   };
 
   // Get right side products (next 3 products)
-  const getRightProducts = () => {
-    const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE + 3;
+  const getRightProducts = (pageIndex?: number) => {
+    const page = pageIndex ?? currentPage;
+    const startIndex = (page - 1) * PRODUCTS_PER_PAGE + 3;
     return products.slice(startIndex, startIndex + 3);
   };
 
-  const LeftProductsGrid = (
+  const LeftProductsGrid = (pageOverride?: number) => (
     <div className="h-full">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -419,7 +439,7 @@ export default function Catalog() {
         </div>
       ) : (
         <div className="grid gap-0 grid-cols-2">
-          {getLeftProducts().map((p) => (
+          {getLeftProducts(pageOverride).map((p) => (
             <div
               key={p._id}
               className="max-w-max"
@@ -440,9 +460,7 @@ export default function Catalog() {
                 <div className="mt-3">
                   <Button
                     className="w-full"
-                    onClick={() =>
-                      toast("Buy Now", { description: `SKU: ${p.sku} - ${p.name}` })
-                    }
+                    onClick={() => handleBuyNow(p)}
                   >
                     Buy Now
                   </Button>
@@ -465,7 +483,7 @@ export default function Catalog() {
     </div>
   );
 
-  const RightProductsGrid = (
+  const RightProductsGrid = (pageOverride?: number) => (
     <div className="h-full">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -497,7 +515,7 @@ export default function Catalog() {
         </div>
       ) : (
         <div className="grid gap-0 grid-cols-2">
-          {getRightProducts().map((p) => (
+          {getRightProducts(pageOverride).map((p) => (
             <div
               key={p._id}
               className="max-w-max"
@@ -518,9 +536,7 @@ export default function Catalog() {
                 <div className="mt-3">
                   <Button
                     className="w-full"
-                    onClick={() =>
-                      toast("Buy Now", { description: `SKU: ${p.sku} - ${p.name}` })
-                    }
+                    onClick={() => handleBuyNow(p)}
                   >
                     Buy Now
                   </Button>
@@ -663,7 +679,6 @@ export default function Catalog() {
                 <div className=" -inset-8 -mb-0.5 -mb-0.5 left-1 p-3 pb-0 relative">
 
                   <div className="text-xs tracking-[0.4px]">{p.sku}</div>
-                  <div className="text-sm text-muted-foreground mt-1">{p.name}</div>
                   {p.price && (
                     <div className="text-sm font-medium text-primary mt-1">
                       ${p.price}
@@ -801,7 +816,7 @@ export default function Catalog() {
   );
 
   const leftContentFor = (v: number) =>
-    v === 1 ? LeftImage : v === 2 ? LeftCategoriesGrid : v >= 3 ? LeftProductsGrid : null;
+    v === 1 ? LeftImage : v === 2 ? LeftCategoriesGrid : v >= 3 ? LeftProductsGrid() : null;
   const rightContentFor = (v: number) =>
     v === 0 ? (
       <div className="h-full relative">
@@ -858,7 +873,7 @@ export default function Catalog() {
     ) : v === 2 ? (
       RightCategoriesGrid
     ) : v >= 3 ? (
-      RightProductsGrid
+      RightProductsGrid()
     ) : null;
 
   const onSelectCategory = (categoryId: string) => {
@@ -885,15 +900,16 @@ export default function Catalog() {
 
     // If we're on a product page and not on the first product page, flip to previous product page
     if (view >= 3 && currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+      setPendingPage(currentPage - 1);
       setFlipDir("prev");
+      setPagingFlip(true);
       setFlipping("left");
       return;
     }
 
     // Otherwise, flip to previous main page
     setFlipDir("prev");
-    setFlipping(view === 1 ? "single" : "left");
+    setFlipping("left");
   };
 
   const startFlipNext = (bypassCategoryCheck = false) => {
@@ -908,22 +924,28 @@ export default function Catalog() {
 
     // If we're on a product page and there are more product pages, flip to next product page
     if (view >= 3 && currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+      setPendingPage(currentPage + 1);
       setFlipDir("next");
+      setPagingFlip(true);
       setFlipping("right");
       return;
     }
 
     // Otherwise, flip to next main page
     setFlipDir("next");
-    setFlipping(view === 0 ? "single" : "right");
+    setFlipping("right");
   };
 
-  const completeFlip = (delta: 1 | -1) => {
+  const completeFlip = (delta: 1 | 0 | -1) => {
     if (flipGuard.current) return;
     flipGuard.current = true;
+    if (pagingFlip && pendingPage !== null) {
+      setCurrentPage(pendingPage);
+    }
     setView((v) => clamp(v + delta));
     setFlipping("none");
+    setPagingFlip(false);
+    setPendingPage(null);
     setTimeout(() => {
       flipGuard.current = false;
     }, 0);
@@ -984,14 +1006,30 @@ export default function Catalog() {
                 <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
               )}
 
-              {view === 0 ? (
-                // Closed book - single page covering the entire width
-                <PageShell side="right" full={true} noPadding={true}>{rightContentFor(view)}</PageShell>
+              {(view === 0 && flipping !== "right") || (flipping === "single" && flipDir === "prev") ? (
+                // Show cover as single page when on cover OR when flipping back to cover
+                <PageShell side="right" full={true} noPadding={true}>{rightContentFor(view === 0 ? 0 : clamp(view - 1))}</PageShell>
               ) : (
                 // Open book - two pages
                 <>
-                  <PageShell side="left" noPadding={view === 1}>{leftContentFor(view)}</PageShell>
-                  <PageShell side="right">{rightContentFor(view)}</PageShell>
+                  <PageShell side="left" noPadding={view === 1 || (view === 0 && flipping === "right")}>
+                    {view >= 3 && pagingFlip
+                      ? LeftProductsGrid(pendingPage ?? currentPage)
+                      : leftContentFor(
+                          flipping === "right" ? clamp(view + 1) :
+                          flipping === "left" ? clamp(view - 1) :
+                          (view === 0 ? 1 : view)
+                        )}
+                  </PageShell>
+                  <PageShell side="right">
+                    {view >= 3 && pagingFlip
+                      ? RightProductsGrid(pendingPage ?? currentPage)
+                      : rightContentFor(
+                          flipping === "right" ? clamp(view + 1) :
+                          flipping === "left" ? clamp(view - 1) :
+                          (view === 0 ? 0 : view)
+                        )}
+                  </PageShell>
                 </>
               )}
 
@@ -999,9 +1037,9 @@ export default function Catalog() {
                 <FlipOverlay
                   side="right"
                   dir={flipDir}
-                  front={rightContentFor(view)}
-                  back={rightContentFor(clamp(view + 1))}
-                  onComplete={() => completeFlip(1)}
+                  front={view >= 3 && pagingFlip ? RightProductsGrid(currentPage) : rightContentFor(view)}
+                  back={view >= 3 && pagingFlip ? LeftProductsGrid(pendingPage ?? currentPage) : leftContentFor(clamp(view + 1))}
+                  onComplete={() => completeFlip(pagingFlip ? 0 : 1)}
                 />
               )}
 
@@ -1009,9 +1047,9 @@ export default function Catalog() {
                 <FlipOverlay
                   side="left"
                   dir={flipDir}
-                  front={leftContentFor(clamp(view - 1))}
-                  back={leftContentFor(view)}
-                  onComplete={() => completeFlip(-1)}
+                  front={view >= 3 && pagingFlip ? LeftProductsGrid(currentPage) : leftContentFor(view)}
+                  back={view >= 3 && pagingFlip ? RightProductsGrid(pendingPage ?? currentPage) : rightContentFor(clamp(view - 1))}
+                  onComplete={() => completeFlip(pagingFlip ? 0 : -1)}
                 />
               )}
 
@@ -1020,9 +1058,7 @@ export default function Catalog() {
                   side="single"
                   dir={flipDir}
                   front={rightContentFor(view)}
-                  back={rightContentFor(
-                    clamp(view + (flipDir === "next" ? 1 : -1)),
-                  )}
+                  back={view >= 3 && pagingFlip ? (flipDir === "next" ? LeftProductsGrid(pendingPage ?? currentPage) : RightProductsGrid(pendingPage ?? currentPage)) : (flipDir === "next" ? leftContentFor(clamp(view + 1)) : rightContentFor(clamp(view - 1)))}
                   onComplete={() => completeFlip(flipDir === "next" ? 1 : -1)}
                 />
               )}
@@ -1032,15 +1068,21 @@ export default function Catalog() {
               className="md:hidden w-full max-w-xl rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 p-6 h-[var(--page-h)] overflow-hidden"
               style={{ perspective: 1600 }}
             >
-              <div className="h-full">{rightContentFor(view)}</div>
+              <div className="h-full">{view >= 3 && pagingFlip
+                ? RightProductsGrid(pendingPage ?? currentPage)
+                : rightContentFor(
+                    flipping === "single" ? (flipDir === "next" ? clamp(view + 1) : clamp(view - 1)) :
+                    flipping === "right" ? clamp(view + 1) :
+                    flipping === "left" ? clamp(view - 1) :
+                    view
+                  )}
+              </div>
               {flipping !== "none" && (
                 <FlipOverlay
                   side="single"
                   dir={flipDir}
                   front={rightContentFor(view)}
-                  back={rightContentFor(
-                    clamp(view + (flipDir === "next" ? 1 : -1)),
-                  )}
+                  back={view >= 3 && pagingFlip ? (flipDir === "next" ? LeftProductsGrid(pendingPage ?? currentPage) : RightProductsGrid(pendingPage ?? currentPage)) : (flipDir === "next" ? leftContentFor(clamp(view + 1)) : rightContentFor(clamp(view - 1)))}
                   onComplete={() => completeFlip(flipDir === "next" ? 1 : -1)}
                 />
               )}
@@ -1054,7 +1096,7 @@ export default function Catalog() {
           </div>
 
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-card/80 px-4 py-2 text-sm shadow ring-1 ring-border">
-            Page {view + 1} / {!selectedCategory ? 3 : (view < 3 ? 4 : 3 + totalPages)}
+            Page {view + 1} / {view < 3 ? 3 : 3 + totalPages}
         </div>
         </div>
       </main>
