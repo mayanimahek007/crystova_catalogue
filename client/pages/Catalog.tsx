@@ -50,11 +50,15 @@ function PageShell({
   side,
   full,
   noPadding,
+  mobileHeight,
+  pageNumber,
 }: {
   children: React.ReactNode;
   side: "left" | "right";
   full?: boolean;
   noPadding?: boolean;
+  mobileHeight?: boolean;
+  pageNumber?: number | null;
 }) {
   return (
     <div
@@ -67,7 +71,7 @@ function PageShell({
           : side === "left"
             ? "rounded-r-none"
             : "rounded-l-none",
-        "h-[var(--page-h)]",
+        mobileHeight ? "h-[var(--page-h-mobile)]" : "h-[var(--page-h)]",
       )}
       style={{ transformStyle: "preserve-3d" }}
     >
@@ -79,6 +83,18 @@ function PageShell({
         }}
       />
       <div className=" h-full ">{children}</div>
+      {typeof pageNumber === "number" && (
+        <div
+          className={cn(
+            "pointer-events-none absolute bottom-3 text-xs text-muted-foreground",
+            side === "left" ? "left-3" : "right-3",
+          )}
+        >
+          <div className="rounded-full bg-card/80 backdrop-blur px-2 py-0.5 ring-1 ring-border">
+            {pageNumber}
+          </div>
+        </div>
+      )}
       <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-tr from-black/0 via-black/0 to-black/5" />
     </div>
   );
@@ -235,6 +251,18 @@ export default function Catalog() {
   const clamp = (v: number) => Math.max(0, Math.min(v, 4));
   const isCover = view === 0;
 
+  const getPageNumber = (v: number, side: "left" | "right"): number | null => {
+    if (v === 0) return side === "right" ? 1 : null;
+    if (v === 1) return side === "left" ? 2 : 3;
+    if (v === 2) return side === "left" ? 4 : 5;
+    if (v >= 3) {
+      const pageIdx = (view >= 3 && pagingFlip) ? (pendingPage ?? currentPage) : currentPage;
+      const base = 6 + (pageIdx - 1) * 2;
+      return side === "left" ? base : base + 1;
+    }
+    return null;
+  };
+
   // Fetch categories from backend API
   const fetchCategories = async () => {
     try {
@@ -296,36 +324,36 @@ export default function Catalog() {
   );
 
   const RightWelcome = (
-    <div className="flex h-full flex-col justify-center text-left select-none px-8">
+    <div className="flex h-full flex-col justify-center text-left select-none px-8 max-[991px]:px-0">
       {/* Logo */}
       <div className="mb-6">
         <div className="flex justify-center items-center gap-2 mb-2">
- <img 
-              src="/crystova.png" 
-              alt="CRYSTOVA" 
+          <img
+              src="/crystova.png"
+              alt="CRYSTOVA"
               style={{
                 height: '50px',
                 width: 'auto',
                 maxWidth: '300px'
               }}
-            />        
+            />
         </div>
       </div>
-      
+
       {/* Tagline */}
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-gray-800 uppercase tracking-wide">
           WORLD'S LARGEST GROWER OF CVD LAB GROWN DIAMONDS
         </h2>
       </div>
-      
+
       {/* Main Content */}
       <div className="mb-6">
         <p className="text-sm text-gray-700 leading-relaxed">
           Welcome to the world of Crystova Jewels, where brilliance meets craftsmanship. With a sprawling manufacturing facility spanning over 7,00,000 sq ft powered by a 25 MW solar plant and over 30+ years of experience, we redefine luxury through our exquisite diamonds and meticulously crafted jewelry. Explore the essence of elegance as we unveil our strengths and statistics that set us apart.
         </p>
       </div>
-      
+
       {/* Quote */}
       <div className="mt-auto">
         <p className="text-sm text-gray-600 italic">
@@ -984,6 +1012,7 @@ export default function Catalog() {
           className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4"
           style={{
             ["--page-h" as any]: "clamp(520px, 72vh, 680px)",
+            ["--page-h-mobile" as any]: "clamp(200px, 40vh, 450px)",
             perspective: 1600,
           }}
         >
@@ -1008,11 +1037,15 @@ export default function Catalog() {
 
               {(view === 0 && flipping !== "right") || (flipping === "single" && flipDir === "prev") ? (
                 // Show cover as single page when on cover OR when flipping back to cover
-                <PageShell side="right" full={true} noPadding={true}>{rightContentFor(view === 0 ? 0 : clamp(view - 1))}</PageShell>
+                <PageShell side="right" full={true} noPadding={true} pageNumber={getPageNumber(view === 0 ? 0 : clamp(view - 1), 'right')}>{rightContentFor(view === 0 ? 0 : clamp(view - 1))}</PageShell>
               ) : (
                 // Open book - two pages
                 <>
-                  <PageShell side="left" noPadding={view === 1 || (view === 0 && flipping === "right")}>
+                  <PageShell side="left" noPadding={view === 1 || (view === 0 && flipping === "right")} pageNumber={getPageNumber(
+                          flipping === "right" ? clamp(view + 1) :
+                          flipping === "left" ? clamp(view - 1) :
+                          (view === 0 ? 1 : view)
+                        , 'left')}>
                     {view >= 3 && pagingFlip
                       ? LeftProductsGrid(pendingPage ?? currentPage)
                       : leftContentFor(
@@ -1021,7 +1054,11 @@ export default function Catalog() {
                           (view === 0 ? 1 : view)
                         )}
                   </PageShell>
-                  <PageShell side="right">
+                  <PageShell side="right" pageNumber={getPageNumber(
+                          flipping === "right" ? clamp(view + 1) :
+                          flipping === "left" ? clamp(view - 1) :
+                          (view === 0 ? 0 : view)
+                        , 'right')}>
                     {view >= 3 && pagingFlip
                       ? RightProductsGrid(pendingPage ?? currentPage)
                       : rightContentFor(
@@ -1064,20 +1101,43 @@ export default function Catalog() {
               )}
             </div>
 
-            <div
-              className="md:hidden w-full max-w-xl rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 p-6 h-[var(--page-h)] overflow-hidden"
-              style={{ perspective: 1600 }}
-            >
-              <div className="h-full">{view >= 3 && pagingFlip
-                ? RightProductsGrid(pendingPage ?? currentPage)
-                : rightContentFor(
-                    flipping === "single" ? (flipDir === "next" ? clamp(view + 1) : clamp(view - 1)) :
-                    flipping === "right" ? clamp(view + 1) :
-                    flipping === "left" ? clamp(view - 1) :
-                    view
-                  )}
-              </div>
-              {flipping !== "none" && (
+            <div className="md:hidden flex w-full max-w-4xl rounded-2xl ring-1 ring-border shadow-2xl bg-card/90 h-[var(--page-h-mobile)]">
+              {view !== 0 && (
+                <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border to-transparent" />
+              )}
+
+              {view === 0 ? (
+                // Closed book - single page covering the entire width
+                <PageShell side="right" full={true} noPadding={true} mobileHeight={true} pageNumber={getPageNumber(view, 'right')}>{rightContentFor(view)}</PageShell>
+              ) : (
+                // Open book - two pages
+                <>
+                  <PageShell side="left" noPadding={view === 1} mobileHeight={true} pageNumber={getPageNumber(view, 'left')}>{leftContentFor(view)}</PageShell>
+                  <PageShell side="right" mobileHeight={true} pageNumber={getPageNumber(view, 'right')}>{rightContentFor(view)}</PageShell>
+                </>
+              )}
+
+              {flipping === "right" && (
+                <FlipOverlay
+                  side="right"
+                  dir={flipDir}
+                  front={view >= 3 && pagingFlip ? RightProductsGrid(currentPage) : rightContentFor(view)}
+                  back={view >= 3 && pagingFlip ? LeftProductsGrid(pendingPage ?? currentPage) : leftContentFor(clamp(view + 1))}
+                  onComplete={() => completeFlip(pagingFlip ? 0 : 1)}
+                />
+              )}
+
+              {flipping === "left" && (
+                <FlipOverlay
+                  side="left"
+                  dir={flipDir}
+                  front={view >= 3 && pagingFlip ? LeftProductsGrid(currentPage) : leftContentFor(view)}
+                  back={view >= 3 && pagingFlip ? RightProductsGrid(pendingPage ?? currentPage) : rightContentFor(clamp(view - 1))}
+                  onComplete={() => completeFlip(pagingFlip ? 0 : -1)}
+                />
+              )}
+
+              {flipping === "single" && (
                 <FlipOverlay
                   side="single"
                   dir={flipDir}
@@ -1095,9 +1155,6 @@ export default function Catalog() {
             />
           </div>
 
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-card/80 px-4 py-2 text-sm shadow ring-1 ring-border">
-            Page {view + 1} / {view < 3 ? 3 : 3 + totalPages}
-        </div>
         </div>
       </main>
     </>

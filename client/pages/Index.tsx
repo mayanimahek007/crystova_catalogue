@@ -563,9 +563,6 @@ export default function Index() {
           />
         </div>
 
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-card/80 px-4 py-2 text-sm shadow ring-1 ring-border">
-          Page {view + 1} / 4
-        </div>
       </div>
     </main>
   );
