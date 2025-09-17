@@ -279,7 +279,7 @@ export default function Catalog() {
     });
   };
 
-  const PRODUCTS_PER_PAGE = 6; // 3 products per side (left + right)
+  const PRODUCTS_PER_PAGE = 8; // 4x2 grid per page (8 products per page)
 
   const clamp = (v: number) => Math.max(0, Math.min(v, 4));
   const isCover = view === 0;
@@ -471,18 +471,18 @@ export default function Catalog() {
     return products.slice(startIndex, endIndex);
   };
 
-  // Get left side products (first 3 products)
+  // Get left side products (first 4 products)
   const getLeftProducts = (pageIndex?: number) => {
     const page = pageIndex ?? currentPage;
     const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
-    return products.slice(startIndex, startIndex + 3);
+    return products.slice(startIndex, startIndex + 4);
   };
 
-  // Get right side products (next 3 products)
+  // Get right side products (next 4 products)
   const getRightProducts = (pageIndex?: number) => {
     const page = pageIndex ?? currentPage;
-    const startIndex = (page - 1) * PRODUCTS_PER_PAGE + 3;
-    return products.slice(startIndex, startIndex + 3);
+    const startIndex = (page - 1) * PRODUCTS_PER_PAGE + 4;
+    return products.slice(startIndex, startIndex + 4);
   };
 
   const LeftProductsGrid = (pageOverride?: number) => (
@@ -524,7 +524,7 @@ export default function Catalog() {
           <div className="text-muted-foreground">Loading products...</div>
         </div>
       ) : (
-        <div className="grid gap-0 grid-cols-1 sm:grid-cols-2">
+        <div className="grid gap-3 grid-cols-2">
           {getLeftProducts(pageOverride).map((p) => (
             <div key={p._id} className="max-w-max">
               <div className="relative aspect-square">
@@ -605,7 +605,7 @@ export default function Catalog() {
           <div className="text-muted-foreground">Loading products...</div>
         </div>
       ) : (
-        <div className="grid gap-0 grid-cols-1 sm:grid-cols-2">
+        <div className="grid gap-3 grid-cols-2">
           {getRightProducts(pageOverride).map((p) => (
             <div key={p._id} className="max-w-max">
               <div className="relative aspect-square">
@@ -647,177 +647,91 @@ export default function Catalog() {
     </div>
   );
 
-  const ProductsGrid = (
+  // Full-width products page (single-mode). Shows 4x2 grid (8 items per page)
+  const ProductsGrid = (pageOverride?: number) => (
     <div className="h-full">
-      {/* Categories Section */}
-      <div className="mb-6">
-        <div className="mb-4 flex items-center gap-3">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
           <Gem className="h-5 w-5 text-primary" />
-          <h2 className="font-brand text-xl md:text-2xl">Categories</h2>
+          <h2 className="font-brand text-2xl md:text-3xl">
+            {selectedCategory ? selectedCategory.name : "Products"}
+          </h2>
         </div>
-        {loading ? (
-          <div className="flex items-center justify-center h-20">
-            <div className="text-muted-foreground">Loading categories...</div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {categories.map((cat) => (
-              <button
-                key={cat._id}
-                onClick={() => onSelectCategory(cat._id)}
-                className={`group relative overflow-hidden rounded-lg ring-1 ring-border shadow hover:shadow-md transition-all ${
-                  selectedCategory?._id === cat._id
-                    ? "ring-primary bg-primary/5"
-                    : ""
-                }`}
-              >
-                <div className="relative aspect-square w-full">
-                  <img
-                    src={
-                      cat.imageUrl
-                        ? `https://catalogue-api.crystovajewels.com${cat.imageUrl}`
-                        : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"
-                    }
-                    alt={cat.name}
-                  onClick={() => onSelectCategory(cat._id)}
-                  className="absolute inset-0 h-full w-full object-contain cursor-pointer"
+        <div className="flex items-center gap-2">
+          {selectedCategory && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setSelectedCategory(null);
+                setProducts([]);
+                setCurrentPage(1);
+                setTotalPages(1);
+                if (singleMode) {
+                  playPageFlipSound();
+                  playSimpleSound();
+                  setFlipDir("prev");
+                  setLinearJumpTarget(3);
+                  setFlipping("single");
+                } else {
+                  setView(2);
+                }
+              }}
+              className="text-xs"
+            >
+              Back to Categories
+            </Button>
+          )}
+          {totalPages > 1 && (
+            <span className="text-sm text-muted-foreground">
+              {Math.max(1, Math.min(totalPages, pageOverride ?? currentPage))} / {totalPages}
+            </span>
+          )}
+        </div>
+      </div>
+      {productsLoading ? (
+        <div className="flex items-center justify-center h-32">
+          <div className="text-muted-foreground">Loading products...</div>
+        </div>
+      ) : (
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
+          {getPaginatedProducts(pageOverride).map((p) => (
+            <div key={p._id} className="max-w-max">
+              <div className="relative aspect-square">
+                <img
+                  src={
+                    p.imageUrl
+                      ? `https://catalogue-api.crystovajewels.com${p.imageUrl}`
+                      : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"
+                  }
+                  alt={p.name}
+                  className="absolute inset-0 h-full w-full object-contain"
                   loading="lazy"
                 />
-                  <div className=" " />
-                  <div className="absolute bottom-0 left-0 right-0 p-2">
-                    <div className="inline-flex items-center rounded-md bg-card/90 backdrop-blur px-2 py-1 text-xs ring-1 ring-border text-foreground cursor-pointer" onClick={() => onSelectCategory(cat._id)}>
-                      {cat.name}
-                    </div>
-                  </div>
-                </div>
-              </button>
-            ))}
-            {categories.length === 0 && !loading && (
-              <div className="col-span-full flex items-center justify-center h-20 text-muted-foreground">
-                No categories found
+                <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
               </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Products Section */}
-      <div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Gem className="h-5 w-5 text-primary" />
-            <h2 className="font-brand text-2xl md:text-3xl">
-              {selectedCategory ? selectedCategory.name : "Products"}
-            </h2>
-          </div>
-          <div className="flex items-center gap-2">
-            {selectedCategory && (
-              <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setSelectedCategory(null);
-              setProducts([]);
-              setCurrentPage(1);
-              setTotalPages(1);
-              if (singleMode) {
-                playPageFlipSound();
-                playSimpleSound();
-                setFlipDir("prev");
-                setLinearJumpTarget(3);
-                setFlipping("single");
-              } else {
-                setView(2);
-              }
-            }}
-            className="text-xs"
-          >
-            Back to Categories
-          </Button>
-            )}
-            {totalPages > 1 && (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                  {currentPage} / {totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setCurrentPage(Math.min(totalPages, currentPage + 1))
-                  }
-                  disabled={currentPage === totalPages}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </>
-            )}
-          </div>
+              <div className=" -inset-8 -mb-0.5 -mb-0.5 left-1 p-3 pb-0 relative">
+                <div className="text-xs tracking-[0.4px]">{p.sku}</div>
+                <div className="mt-3">
+                  <Button className="w-full" onClick={() => handleBuyNow(p)}>
+                    Buy Now
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+          {selectedCategory && products.length === 0 && !productsLoading && (
+            <div className="col-span-full flex items-center justify-center rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
+              No products found for {selectedCategory.name}
+            </div>
+          )}
+          {!selectedCategory && (
+            <div className="col-span-full flex items-center justify-center rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
+              Select a category first
+            </div>
+          )}
         </div>
-        {productsLoading ? (
-          <div className="flex items-center justify-center h-32">
-            <div className="text-muted-foreground">Loading products...</div>
-          </div>
-        ) : (
-          <div className="grid gap-0 grid-cols-1 sm:grid-cols-2">
-            {getPaginatedProducts().map((p) => (
-              <div key={p._id} className="max-w-max">
-                <div className="relative aspect-square">
-                  <img
-                    src={
-                      p.imageUrl
-                        ? `https://catalogue-api.crystovajewels.com${p.imageUrl}`
-                        : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"
-                    }
-                    alt={p.name}
-                    className="absolute inset-0 h-full w-full object-cover"
-                    loading="lazy"
-                  />
-                  <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
-                </div>
-                <div className=" -inset-8 -mb-0.5 -mb-0.5 left-1 p-3 pb-0 relative">
-                  <div className="text-xs tracking-[0.4px]">{p.sku}</div>
-                  {p.price && (
-                    <div className="text-sm font-medium text-primary mt-1">
-                      ${p.price}
-                    </div>
-                  )}
-                  <div className="mt-3">
-                    <Button
-                      className="w-full"
-                      onClick={() =>
-                        toast("Buy Now", {
-                          description: `SKU: ${p.sku} - ${p.name}`,
-                        })
-                      }
-                    >
-                      Buy Now
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-            {selectedCategory && products.length === 0 && !productsLoading && (
-              <div className="col-span-full flex items-center justify-center rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
-                No products found for {selectedCategory.name}
-              </div>
-            )}
-            {!selectedCategory && (
-              <div className="col-span-full flex items-center justify-center rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
-                Select a category first
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 
@@ -1001,16 +915,13 @@ export default function Catalog() {
     if (n === 2) return WelcomeSplit; // split welcome page
     if (n === 3) return CategoriesGrid; // all categories full width
     if (n >= 4) {
-      // Product pages: 2 linear pages per product page index (left then right)
-      const idx = n - 4; // 0-based within products
-      const pageIdx = Math.floor(idx / 2) + 1; // 1-based product page
-      const isLeft = idx % 2 === 0;
-      return isLeft ? LeftProductsGrid(pageIdx) : RightProductsGrid(pageIdx);
+      const pageIdx = n - 3; // 4 => 1, 5 => 2, ...
+      return ProductsGrid(pageIdx);
     }
     return null;
   };
 
-  const totalLinearPages = useMemo(() => 3 + (selectedCategory ? totalPages * 2 : 0), [selectedCategory, totalPages]);
+  const totalLinearPages = useMemo(() => 3 + (selectedCategory ? totalPages : 0), [selectedCategory, totalPages]);
 
   const onSelectCategory = (categoryId: string) => {
     const cat = categories.find((c) => c._id === categoryId) || null;
@@ -1160,8 +1071,8 @@ export default function Catalog() {
         <div
           className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-2 md:px-4 overflow-hidden"
           style={{
-            ["--page-h" as any]: "clamp(540px, 76vh, 720px)",
-            ["--page-h-mobile" as any]: "clamp(380px, 74vh, 600px)",
+            ["--page-h" as any]: "clamp(560px, 80vh, 760px)",
+            ["--page-h-mobile" as any]: "clamp(400px, 78vh, 640px)",
             perspective: 1600,
           }}
         >
@@ -1170,38 +1081,34 @@ export default function Catalog() {
             <div className="absolute bottom-20 right-10 h-48 w-48 rounded-full bg-rose-300/40" />
           </div>
 
-          <div className="flex items-center gap-3 md:gap-0 min-[1110px]:gap-6">
-            <div className={cn(linearPage === 1 ? "invisible" : undefined)}>
+          <div className="relative flex w-[1000px] max-w-[96vw] rounded-2xl ring-1 ring-border shadow-2xl bg-transparent h-[var(--page-h)]">
+            {(() => {
+              return (
+                <PageShell side="right" full pageNumber={linearPage}>
+                  {contentForLinear(linearPage)}
+                </PageShell>
+              );
+            })()}
+
+            {flipping === "single" && (
+              <FlipOverlay
+                side="single"
+                dir={flipDir}
+                front={contentForLinear(linearPage)}
+                back={contentForLinear(linearJumpTarget ?? (flipDir === "next" ? linearPage + 1 : linearPage - 1))}
+                frontPageNumber={linearPage}
+                backPageNumber={linearJumpTarget ?? (flipDir === "next" ? linearPage + 1 : linearPage - 1)}
+                onComplete={() => completeFlip(linearJumpTarget !== null ? 0 : (flipDir === "next" ? 1 : -1))}
+              />
+            )}
+
+            <div className={cn("absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20", linearPage === 1 ? "invisible" : undefined)}>
               <ArrowButton
                 direction="left"
                 onClick={startFlipPrev}
                 disabled={linearPage === 1 || flipping !== "none"}
-                className="relative z-20 md:translate-x-1/2 min-[1110px]:translate-x-0"
-              />
+                className="" />
             </div>
-
-            <div className="relative flex w-[1000px] max-w-[96vw] rounded-2xl ring-1 ring-border shadow-2xl bg-transparent h-[var(--page-h)]">
-              {(() => {
-                return (
-                  <PageShell side="right" full pageNumber={linearPage}>
-                    {contentForLinear(linearPage)}
-                  </PageShell>
-                );
-              })()}
-
-              {flipping === "single" && (
-                <FlipOverlay
-                  side="single"
-                  dir={flipDir}
-                  front={contentForLinear(linearPage)}
-                  back={contentForLinear(linearJumpTarget ?? (flipDir === "next" ? linearPage + 1 : linearPage - 1))}
-                  frontPageNumber={linearPage}
-                  backPageNumber={linearJumpTarget ?? (flipDir === "next" ? linearPage + 1 : linearPage - 1)}
-                  onComplete={() => completeFlip(linearJumpTarget !== null ? 0 : (flipDir === "next" ? 1 : -1))}
-                />
-              )}
-            </div>
-
             <ArrowButton
               direction="right"
               onClick={startFlipNext}
@@ -1210,7 +1117,7 @@ export default function Catalog() {
                 linearPage >= totalLinearPages ||
                 (linearPage >= 3 && !selectedCategory)
               }
-              className="relative z-20 md:-translate-x-1/2 min-[1110px]:translate-x-0"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20"
             />
           </div>
         </div>
