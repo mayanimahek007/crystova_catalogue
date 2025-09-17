@@ -756,9 +756,9 @@ export default function Catalog() {
           <div className="text-muted-foreground">Loading products...</div>
         </div>
       ) : (
-        <div className="grid gap-3 grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-4 2xl:grid-cols-4 product-grid-large">
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 product-grid-large">
           {getPaginatedProducts(pageOverride).map((p) => (
-            <div key={p._id} className="max-w-max">
+            <div key={p._id} className="">
               <div className="relative aspect-square">
                 <img
                   src={
