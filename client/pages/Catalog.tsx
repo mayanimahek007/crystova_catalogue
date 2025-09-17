@@ -281,6 +281,39 @@ export default function Catalog() {
 
   const PRODUCTS_PER_PAGE = 8; // 4x2 grid per page (8 products per page)
 
+  // Prefetch helper to avoid visible image loading during flips
+  const preloadImages = (urls: string[]) => {
+    if (!urls || urls.length === 0) return;
+    (window as any).__preloadedImages = (window as any).__preloadedImages || [];
+    urls.forEach((u) => {
+      if (!u) return;
+      try {
+        const img = new Image();
+        img.src = u;
+        (window as any).__preloadedImages.push(img);
+      } catch (e) {
+        // ignore
+      }
+    });
+  };
+
+  const getImagesForLinearPage = (n: number) => {
+    if (n === 1) return ["/3.png", "/crystova.png"];
+    if (n === 2) return ["/cate.png", "/crystova.png"];
+    if (n === 3) {
+      return categories
+        .map((c) => (c.imageUrl ? `https://catalogue-api.crystovajewels.com${c.imageUrl}` : ""))
+        .filter(Boolean);
+    }
+    if (n >= 4) {
+      const pageIdx = n - 3; // 4 => page 1
+      const startIndex = (pageIdx - 1) * PRODUCTS_PER_PAGE;
+      const pageProducts = products.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
+      return pageProducts.map((p) => (p.imageUrl ? `https://catalogue-api.crystovajewels.com${p.imageUrl}` : "")).filter(Boolean);
+    }
+    return [] as string[];
+  };
+
   const clamp = (v: number) => Math.max(0, Math.min(v, 4));
   const isCover = view === 0;
 
@@ -947,6 +980,10 @@ export default function Catalog() {
       playPageFlipSound();
       playSimpleSound();
       setFlipDir("prev");
+      const target = linearPage - 1;
+      // Preload target page images before starting flip
+      preloadImages(getImagesForLinearPage(target));
+      setLinearJumpTarget(target);
       setFlipping("single");
       return;
     }
@@ -982,6 +1019,10 @@ export default function Catalog() {
       playPageFlipSound();
       playSimpleSound();
       setFlipDir("next");
+      const target = linearPage + 1;
+      // Preload target page images before starting flip
+      preloadImages(getImagesForLinearPage(target));
+      setLinearJumpTarget(target);
       setFlipping("single");
       return;
     }
@@ -1053,6 +1094,25 @@ export default function Catalog() {
     fetchCategories();
   }, []);
 
+  // Preload cover + welcome images immediately to avoid flicker
+  useEffect(() => {
+    preloadImages(getImagesForLinearPage(1).concat(getImagesForLinearPage(2)));
+  }, []);
+
+  // When categories load, preload their images for the full categories page
+  useEffect(() => {
+    if (categories.length > 0) {
+      preloadImages(getImagesForLinearPage(3));
+    }
+  }, [categories]);
+
+  // When products load, preload first product page images
+  useEffect(() => {
+    if (products.length > 0) {
+      preloadImages(getImagesForLinearPage(4));
+    }
+  }, [products]);
+
   // Reset to cover on initial mount (avoid HMR-resumed state)
   useEffect(() => {
     setView(0);
@@ -1083,9 +1143,13 @@ export default function Catalog() {
 
           <div className="relative flex w-[1000px] max-w-[96vw] rounded-2xl ring-1 ring-border shadow-2xl bg-transparent h-[var(--page-h)]">
             {(() => {
+              const renderPage =
+                flipping === "single"
+                  ? (linearJumpTarget ?? (flipDir === "next" ? linearPage + 1 : linearPage - 1))
+                  : linearPage;
               return (
-                <PageShell side="right" full pageNumber={linearPage}>
-                  {contentForLinear(linearPage)}
+                <PageShell side="right" full pageNumber={renderPage}>
+                  {contentForLinear(renderPage)}
                 </PageShell>
               );
             })()}
