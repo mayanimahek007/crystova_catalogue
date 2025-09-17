@@ -77,7 +77,7 @@ function PageShell({
   return (
     <div
       className={cn(
-        "relative flex-1 overflow-hidden rounded-2xl bg-card",
+        "relative flex-1 overflow-hidden rounded-2xl bg-card diary_pageee",
         computedNoPadding ? "p-0" : "p-6 md:p-8",
         "shadow-[inset_0_0_0_1px_hsl(var(--border)),0_30px_80px_-20px_rgba(0,0,0,0.25)]",
         full
