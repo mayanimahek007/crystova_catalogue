@@ -936,13 +936,13 @@ export default function Catalog() {
         {/* Background overlay */}
 
         {/* Grid pattern */}
-        <div className="hidden md:block absolute top-16 left-24 z-10">
+        {/* <div className="hidden md:block absolute top-16 left-24 z-10">
           <div className="grid grid-cols-5 gap-1">
             {Array.from({ length: 25 }).map((_, i) => (
               <div key={i} className="w-1 h-1 bg-gray-600 rounded-full"></div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Main content */}
         <div className="relative h-full flex flex-col items-center justify-center text-center z-10">
