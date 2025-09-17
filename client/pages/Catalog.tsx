@@ -661,7 +661,7 @@ Please provide more details.`;
                       : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"
                   }
                   alt={p.name}
-                  className="absolute inset-0 h-full w-full object-contain"
+                  className="absolute inset-0 h-full w-full object-cover"
                   loading="lazy"
                 />
                 <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
@@ -738,7 +738,7 @@ Please provide more details.`;
                       : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"
                   }
                   alt={p.name}
-                  className="absolute inset-0 h-full w-full object-contain"
+                  className="absolute inset-0 h-full w-full object-cover"
                   loading="lazy"
                 />
                 <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
@@ -823,7 +823,7 @@ Please provide more details.`;
                       : "https://images.unsplash.com/photo-1516632664305-eda5b4636b93?q=80&w=1600&auto=format&fit=crop"
                   }
                   alt={p.name}
-                  className="absolute inset-0 h-full w-full object-contain"
+                  className="absolute inset-0 h-full w-full object-cover"
                   loading="lazy"
                 />
                 <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
