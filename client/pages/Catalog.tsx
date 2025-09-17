@@ -267,17 +267,60 @@ export default function Catalog() {
 
   // WhatsApp function for Buy Now
   const handleBuyNow = (product: Product) => {
-    const phoneNumber = "919099975424"; // WhatsApp number without + sign
-    const message = `Hello! I'm interested in purchasing this product:\n\nSKU: ${product.sku}\nCategory: ${product.categoryname}\n\nPlease provide more details and pricing.`;
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    const phoneNumber = "918460477177"; // WhatsApp number without + sign
+    const message = `Hello! I'm interested in purchasing this product:
 
-    // Open WhatsApp in a new tab
-    window.open(whatsappUrl, "_blank");
+SKU: ${product.sku}
+Price: ₹${product.price}
+Category: ${product.categoryname}
 
-    // Also show a toast notification
-    toast("Opening WhatsApp", {
-      description: `SKU: ${product.sku}`,
-    });
+Please provide more details.`;
+    
+    // Try different WhatsApp URL formats for automatic message passing
+    const urls = [
+      `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
+      `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`,
+      `https://web.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`,
+      `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`
+    ];
+
+    // Try to open WhatsApp with automatic message
+    let success = false;
+    
+    for (let i = 0; i < urls.length; i++) {
+      try {
+        const newWindow = window.open(urls[i], "_blank");
+        if (newWindow) {
+          success = true;
+          break;
+        }
+      } catch (error) {
+        console.log(`URL ${i + 1} failed:`, error);
+        continue;
+      }
+    }
+
+    if (success) {
+      toast.success("Opening WhatsApp with message...", {
+        description: `SKU: ${product.sku} | Price: ₹${product.price}`,
+      });
+    } else {
+      // Fallback: show message for manual copy
+      toast("WhatsApp opened! If message doesn't appear, copy this:", {
+        description: message,
+        action: {
+          label: "Copy Message",
+          onClick: () => {
+            navigator.clipboard.writeText(message);
+            toast.success("Message copied to clipboard!");
+          }
+        }
+      });
+    }
+    
+    // Log for debugging
+    console.log("WhatsApp URLs tried:", urls);
+    console.log("Message:", message);
   };
 
   // Dynamic products per page based on screen size
@@ -618,7 +661,7 @@ export default function Catalog() {
                 <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
               </div>
               <div className=" -inset-8 -mb-0.5 -mb-0.5 left-1 p-3 pb-0 relative">
-                <div className="text-xs tracking-[0.4px] flex justify-center w-full">{p.sku}</div>
+                <div className="text-xs tracking-[0.4px] flex justify-center w-full">₹{p.price}</div>
 
                 <div className="mt-3">
                   <Button className="w-full" onClick={() => handleBuyNow(p)}>
@@ -695,7 +738,7 @@ export default function Catalog() {
                 <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
               </div>
               <div className=" -inset-8 -mb-0.5 -mb-0.5 left-1 p-3 pb-0 relative">
-                <div className="text-xs tracking-[0.4px] flex justify-center w-full">{p.sku}</div>
+                <div className="text-xs tracking-[0.4px] flex justify-center w-full">₹{p.price}</div>
 
                 <div className="mt-3">
                   <Button className="w-full" onClick={() => handleBuyNow(p)}>
@@ -780,7 +823,7 @@ export default function Catalog() {
                 <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
               </div>
               <div className=" -inset-8 -mb-0.5 -mb-0.5 left-1 p-3 pb-0 relative">
-                <div className="text-xs tracking-[0.4px] flex justify-center w-full">{p.sku}</div>
+                <div className="text-xs tracking-[0.4px] flex justify-center w-full">₹{p.price}</div>
                 <div className="mt-3">
                   <Button className="w-full h-8 text-xs" onClick={() => handleBuyNow(p)}>
                     Buy Now
