@@ -459,7 +459,7 @@ export default function Catalog() {
           <div className="text-muted-foreground">Loading categories...</div>
         </div>
       ) : (
-        <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-4 categories-grid">
           {categories.map((cat) => (
             <button
               key={cat._id}
@@ -920,18 +920,12 @@ export default function Catalog() {
               <img
                 src="/crystova.png"
                 alt="CRYSTOVA"
-                className="h-12 md:h-24 w-auto max-w-[380px]"
+                className="h-12 md:h-32 w-auto max-w-[380px]"
               />
             </div>
           </div>
 
           {/* Bottom text */}
-          <div className="absolute bottom-8 md:bottom-16 left-4 md:left-20">
-            <p className="text-xs md:text-sm text-gray-900 font-light text-start font-serif font-bold">
-              Wholesale <br />
-              catalog 2025
-            </p>
-          </div>
         </div>
       </div>
     ) : v === 1 ? (
