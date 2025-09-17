@@ -461,7 +461,7 @@ Please provide more details.`;
       <div className="mb-3 md:mb-6">
         <div className="flex justify-center items-center gap-2 mb-2">
           <img
-            src="/crystova.png"
+            src="/crystova.webp"
             alt="CRYSTOVA"
             className="h-12 md:h-12 max-[991px]:h-10 max-[348px]:h-8 w-auto max-w-[300px]"
           />
@@ -975,7 +975,7 @@ Please provide more details.`;
         {/* Background jewelry image */}
         <div className="absolute inset-0">
           <img
-            src="/3.png"
+            src="/3.webp"
             alt="Jewelry Background"
             className="absolute inset-0 h-full w-full object-cover"
             loading="lazy"
@@ -999,7 +999,7 @@ Please provide more details.`;
           <div className="mb-4">
             <div className="flex justify-center items-center gap-2 mb-2">
               <img
-                src="/crystova.png"
+                src="/crystova.webp"
                 alt="CRYSTOVA"
                 className="h-12 md:h-32 w-auto max-w-[400px]"
               />
