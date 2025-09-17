@@ -475,7 +475,7 @@ export default function Catalog() {
                   }
                   alt={cat.name}
                   onClick={() => onSelectCategory(cat._id)}
-                  className="absolute inset-0 h-full w-full object-contain cursor-pointer"
+                  className="absolute inset-0 h-full w-full object-cover cursor-pointer"
                   loading="lazy"
                 />
                 <div className="absolute bottom-0 left-0 right-0 p-2">
@@ -804,7 +804,7 @@ export default function Catalog() {
                   }
                   alt={cat.name}
                   onClick={() => onSelectCategory(cat._id)}
-                  className="absolute inset-0 h-full w-full object-contain cursor-pointer"
+                  className="absolute inset-0 h-full w-full object-cover cursor-pointer"
                   loading="lazy"
                 />
                 <div className=" " />
@@ -858,7 +858,7 @@ export default function Catalog() {
                   }
                   alt={cat.name}
                   onClick={() => onSelectCategory(cat._id)}
-                  className="absolute inset-0 h-full w-full object-contain cursor-pointer"
+                  className="absolute inset-0 h-full w-full object-cover cursor-pointer"
                   loading="lazy"
                 />
                 <div className=" " />
