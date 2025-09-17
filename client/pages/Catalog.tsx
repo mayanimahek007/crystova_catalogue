@@ -420,6 +420,35 @@ export default function Catalog() {
           unveil our strengths and statistics that set us apart.
         </p>
       </div>
+      <div className="silver-content-large mt-6 space-y-4">
+        <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
+          <div className="text-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">925 Sterling Silver Collection</h3>
+            <p className="text-sm text-gray-600">Premium quality silver jewelry crafted to perfection</p>
+          </div>
+          
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 border border-gray-200">
+              <div className="text-2xl font-bold text-gray-700 mb-1">92.5%</div>
+              <div className="text-xs text-gray-600">Pure Silver</div>
+            </div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 border border-gray-200">
+              <div className="text-2xl font-bold text-gray-700 mb-1">7.5%</div>
+              <div className="text-xs text-gray-600">Copper Alloy</div>
+            </div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 border border-gray-200">
+              <div className="text-2xl font-bold text-gray-700 mb-1">925</div>
+              <div className="text-xs text-gray-600">Hallmark</div>
+            </div>
+          </div>
+          
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-700 font-medium">
+              "925 Sterling Silver: The perfect blend of durability and elegance"
+            </p>
+          </div>
+        </div>
+      </div>
       <div className="mt-auto">
         <p className="text-xs md:text-sm max-[348px]:text-[11px] text-gray-600 italic">
           "Crystova Jewels: Crafting timeless elegance with exquisite designs,
@@ -459,7 +488,7 @@ export default function Catalog() {
           <div className="text-muted-foreground">Loading categories...</div>
         </div>
       ) : (
-        <div className="grid gap-3 grid-cols-2 md:grid-cols-4 categories-grid">
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 categories-grid">
           {categories.map((cat) => (
             <button
               key={cat._id}
@@ -727,7 +756,7 @@ export default function Catalog() {
           <div className="text-muted-foreground">Loading products...</div>
         </div>
       ) : (
-        <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-4 2xl:grid-cols-4 product-grid-large">
           {getPaginatedProducts(pageOverride).map((p) => (
             <div key={p._id} className="max-w-max">
               <div className="relative aspect-square">
@@ -1123,10 +1152,10 @@ export default function Catalog() {
         )}
       >
         <div
-          className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-2 md:px-4 overflow-hidden"
+          className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-2 md:px-4 overflow-hidden catalog-container"
           style={{
-            ["--page-h" as any]: "clamp(560px, 80vh, 760px)",
-            ["--page-h-mobile" as any]: "clamp(400px, 78vh, 640px)",
+            ["--page-h" as any]: "clamp(560px, 80vh, 1000px)",
+            ["--page-h-mobile" as any]: "clamp(400px, 78vh, 800px)",
             perspective: 1600,
           }}
         >
@@ -1135,7 +1164,7 @@ export default function Catalog() {
             <div className="absolute bottom-20 right-10 h-48 w-48 rounded-full bg-rose-300/40" />
           </div>
 
-          <div className="relative flex w-[1000px] max-w-[96vw] rounded-2xl ring-1 ring-border shadow-2xl bg-transparent h-[var(--page-h)]">
+          <div className="relative flex w-[1000px] max-w-[96vw] rounded-2xl ring-1 ring-border shadow-2xl bg-transparent h-[var(--page-h)] catalog-page" style={{ maxWidth: "min(96vw, 1400px)" }}>
             <div className="relative w-full h-full overflow-hidden rounded-2xl">
             {(() => {
               const renderPage =

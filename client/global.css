@@ -168,3 +168,127 @@
     padding-right: 0.75rem !important;
   }
 }
+
+/* Medium-large screen optimizations for screens 2000px - 2200px */
+@media (min-width: 2000px) and (max-width: 2200px) {
+  /* Increase page height and width for this specific range */
+  .catalog-container {
+    --page-h: clamp(800px, 85vh, 1200px) !important;
+    --page-h-mobile: clamp(600px, 80vh, 1000px) !important;
+    max-width: 1600px !important;
+  }
+  
+  .catalog-page {
+    width: 1400px !important;
+    max-width: 90vw !important;
+  }
+  
+  /* Increase category name font size */
+  .categories-grid .inline-flex {
+    font-size: 16px !important;
+    padding: 0.5rem 1rem !important;
+  }
+}
+
+/* Large screen optimizations for screens 2201px - 2560px */
+@media (min-width: 2201px) and (max-width: 2560px) {
+  /* Increase page height and width for this specific range */
+  .catalog-container {
+    --page-h: clamp(900px, 90vh, 1400px) !important;
+    --page-h-mobile: clamp(700px, 85vh, 1200px) !important;
+    max-width: 1800px !important;
+  }
+  
+  .catalog-page {
+    width: 1700px !important;
+    max-width: 90vw !important;
+  }
+}
+
+/* Extra large screen optimizations for screens > 2560px */
+@media (min-width: 2561px) {
+  /* Increase overall page width for large screens */
+  .catalog-container {
+    max-width: 1800px !important;
+  }
+  
+  .catalog-page {
+    width: 1600px !important;
+    max-width: 95vw !important;
+  }
+  
+  /* Increase font sizes for 2nd page (welcome page) */
+  .page2-heading {
+    font-size: 1.5rem !important; /* Increased from base text-lg */
+    line-height: 1.3;
+  }
+  
+  .page2-content p {
+    font-size: 1rem !important; /* Increased from text-sm */
+    line-height: 1.6;
+  }
+  
+  .page2-content .text-xs {
+    font-size: 0.875rem !important; /* Increased from text-xs */
+  }
+  
+  /* Categories grid - 4 per row */
+  .categories-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(auto, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .categories-grid .relative.aspect-square {
+    min-height: 16rem;
+  }
+  
+  .categories-grid .inline-flex {
+    font-size: 14px;
+    padding: 0.5rem 1rem;
+  }
+  
+  /* Product grid - 4 per row */
+  .product-grid-large {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(auto, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .product-grid-large .relative.aspect-square {
+    min-height: 16rem;
+  }
+}
+
+/* Medium-large screen optimizations for screens 1200px - 1999px */
+@media (min-width: 1200px) and (max-width: 1999px) {
+  .categories-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
+  .product-grid-large {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+
+@media (min-width: 1200px) and (max-width: 1999px) {
+  .more_con {
+    display: none;
+  }
+}
+
+/* Silver content - show only on screens 2000px and larger */
+.silver-content-large {
+  display: none;
+}
+
+@media (min-width: 2000px) {
+  .silver-content-large {
+    display: block;
+  }
+}
