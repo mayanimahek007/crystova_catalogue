@@ -279,7 +279,7 @@ export default function Catalog() {
     });
   };
 
-  const PRODUCTS_PER_PAGE = 8; // 4x2 grid per page (8 products per page)
+  const PRODUCTS_PER_PAGE = 8; // 4x2 grid per page (8 products per page) - exactly 2 rows
 
   // Prefetch helper to avoid visible image loading during flips
   const preloadImages = (urls: string[]) => {
@@ -618,11 +618,7 @@ export default function Catalog() {
               No products found for {selectedCategory.name}
             </div>
           )}
-          {!selectedCategory && (
-            <div className="flex items-center justify-center rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
-              Select a category first
-            </div>
-          )}
+        
         </div>
       )}
     </div>
@@ -699,11 +695,7 @@ export default function Catalog() {
               No products found for {selectedCategory.name}
             </div>
           )}
-          {!selectedCategory && (
-            <div className="flex items-center justify-center rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
-              Select a category first
-            </div>
-          )}
+       
         </div>
       )}
     </div>
@@ -787,11 +779,7 @@ export default function Catalog() {
               No products found for {selectedCategory.name}
             </div>
           )}
-          {!selectedCategory && (
-            <div className="col-span-full flex items-center justify-center rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
-              Select a category first
-            </div>
-          )}
+         
         </div>
       )}
     </div>
