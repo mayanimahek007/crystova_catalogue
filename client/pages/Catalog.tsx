@@ -361,7 +361,7 @@ Please provide more details.`;
 
   const getImagesForLinearPage = (n: number) => {
     if (n === 1) return ["/3.webp", "/crystova.webp"];
-    if (n === 2) return ["/cate1.webp", "/crystova.webp"];
+    if (n === 2) return ["/cate2.webp", "/crystova.webp"];
     if (n === 3) {
       return categories
         .map((c) => (c.imageUrl ? `https://catalogue-api.crystovajewels.com${c.imageUrl}` : ""))
@@ -447,7 +447,7 @@ Please provide more details.`;
   const LeftImage = (
     <div className="h-full relative">
       <img
-        src="/cate1.webp"
+        src="/cate2.webp"
         alt="Jewelry"
         className="absolute inset-0 h-full w-full object-cover"
         loading="lazy"
@@ -525,7 +525,7 @@ Please provide more details.`;
   const WelcomeSplit = (
     <div className="h-full grid grid-cols-1 md:grid-cols-2 gap-0">
       <div className="relative h-44 md:h-full max-[348px]:h-56 page-img-range">
-        <img src="/cate1.webp" alt="Jewelry" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+        <img src="/cate2.webp" alt="Jewelry" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
         <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-black/0 to-black/0" />
       </div>
       <div className="h-full flex p-4 md:p-10 max-[348px]:p-2 page2-content">
