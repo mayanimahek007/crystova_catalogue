@@ -336,6 +336,9 @@
   }
 }
 
+.product_img{
+  transform: scale(1.5);
+}
 
 .category-image-sdsad {
   @media (max-width: 768px) {
