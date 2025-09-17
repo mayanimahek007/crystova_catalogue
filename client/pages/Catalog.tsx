@@ -231,6 +231,7 @@ export default function Catalog() {
   const [productsLoading, setProductsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [productsPerPage, setProductsPerPage] = useState(8);
   const flipGuard = useRef(false);
 
   // Single-page mode (requested): show one page at a time with page numbers 1..N
@@ -279,7 +280,19 @@ export default function Catalog() {
     });
   };
 
-  const PRODUCTS_PER_PAGE = 8; // 4x2 grid per page (8 products per page) - exactly 2 rows
+  // Dynamic products per page based on screen size
+  const updateProductsPerPage = () => {
+    if (typeof window !== 'undefined') {
+      const width = window.innerWidth;
+      if (width <= 425) {
+        setProductsPerPage(4); // 2x2 grid for very small screens
+      } else if (width < 768) {
+        setProductsPerPage(6); // 3x2 grid for small screens
+      } else {
+        setProductsPerPage(8); // 4x2 grid for medium+ screens
+      }
+    }
+  };
 
   // Prefetch helper to avoid visible image loading during flips
   const preloadImages = (urls: string[]) => {
@@ -307,8 +320,8 @@ export default function Catalog() {
     }
     if (n >= 4) {
       const pageIdx = n - 3; // 4 => page 1
-      const startIndex = (pageIdx - 1) * PRODUCTS_PER_PAGE;
-      const pageProducts = products.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
+      const startIndex = (pageIdx - 1) * productsPerPage;
+      const pageProducts = products.slice(startIndex, startIndex + productsPerPage);
       return pageProducts.map((p) => (p.imageUrl ? `https://catalogue-api.crystovajewels.com${p.imageUrl}` : "")).filter(Boolean);
     }
     return [] as string[];
@@ -362,7 +375,7 @@ export default function Catalog() {
       if (response.ok) {
         const data = await response.json();
         setProducts(data);
-        setTotalPages(Math.ceil(data.length / PRODUCTS_PER_PAGE));
+        setTotalPages(Math.ceil(data.length / productsPerPage));
         setCurrentPage(1); // Reset to first page when category changes
       } else {
         console.error("Failed to fetch products for category:", categoryName);
@@ -474,7 +487,7 @@ export default function Catalog() {
 
   const CategoriesGrid = (
     <div className="h-full">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Gem className="h-5 w-5 text-primary" />
           <h2 className="font-brand text-2xl md:text-3xl">Categories</h2>
@@ -528,23 +541,25 @@ export default function Catalog() {
   // Get paginated products
   const getPaginatedProducts = (pageIndex?: number) => {
     const page = pageIndex ?? currentPage;
-    const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
-    const endIndex = startIndex + PRODUCTS_PER_PAGE;
+    const startIndex = (page - 1) * productsPerPage;
+    const endIndex = startIndex + productsPerPage;
     return products.slice(startIndex, endIndex);
   };
 
-  // Get left side products (first 4 products)
+  // Get left side products (first half of products)
   const getLeftProducts = (pageIndex?: number) => {
     const page = pageIndex ?? currentPage;
-    const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
-    return products.slice(startIndex, startIndex + 4);
+    const startIndex = (page - 1) * productsPerPage;
+    const halfProducts = Math.ceil(productsPerPage / 2);
+    return products.slice(startIndex, startIndex + halfProducts);
   };
 
-  // Get right side products (next 4 products)
+  // Get right side products (second half of products)
   const getRightProducts = (pageIndex?: number) => {
     const page = pageIndex ?? currentPage;
-    const startIndex = (page - 1) * PRODUCTS_PER_PAGE + 4;
-    return products.slice(startIndex, startIndex + 4);
+    const startIndex = (page - 1) * productsPerPage + Math.ceil(productsPerPage / 2);
+    const halfProducts = Math.floor(productsPerPage / 2);
+    return products.slice(startIndex, startIndex + halfProducts);
   };
 
   const LeftProductsGrid = (pageOverride?: number) => (
@@ -603,7 +618,7 @@ export default function Catalog() {
                 <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
               </div>
               <div className=" -inset-8 -mb-0.5 -mb-0.5 left-1 p-3 pb-0 relative">
-                <div className="text-xs tracking-[0.4px]">{p.sku}</div>
+                <div className="text-xs tracking-[0.4px] flex justify-center w-full">{p.sku}</div>
 
                 <div className="mt-3">
                   <Button className="w-full" onClick={() => handleBuyNow(p)}>
@@ -680,7 +695,7 @@ export default function Catalog() {
                 <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
               </div>
               <div className=" -inset-8 -mb-0.5 -mb-0.5 left-1 p-3 pb-0 relative">
-                <div className="text-xs tracking-[0.4px]">{p.sku}</div>
+                <div className="text-xs tracking-[0.4px] flex justify-center w-full">{p.sku}</div>
 
                 <div className="mt-3">
                   <Button className="w-full" onClick={() => handleBuyNow(p)}>
@@ -736,11 +751,11 @@ export default function Catalog() {
               Back to Categories
             </Button>
           )}
-          {totalPages > 1 && (
+          {/* {totalPages > 1 && (
             <span className="text-sm text-muted-foreground">
               {Math.max(1, Math.min(totalPages, pageOverride ?? currentPage))} / {totalPages}
             </span>
-          )}
+          )} */}
         </div>
       </div>
       {productsLoading ? (
@@ -748,10 +763,10 @@ export default function Catalog() {
           <div className="text-muted-foreground">Loading products...</div>
         </div>
       ) : (
-        <div className="grid gap-3 grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 product-grid-large">
+        <div className="grid gap-3 max-[425px]:grid-cols-2 grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 product-grid-large">
           {getPaginatedProducts(pageOverride).map((p) => (
             <div key={p._id} className="">
-              <div className="relative aspect-square">
+              <div className="relative aspect-square h-34 sm:h-40 md:h-40 lg:h-40 xl:h-40 2xl:h-40 flex w-full justify-center">
                 <img
                   src={
                     p.imageUrl
@@ -765,9 +780,9 @@ export default function Catalog() {
                 <div className="absolute from-transparent inset-0 to-black/10 via-transparent" />
               </div>
               <div className=" -inset-8 -mb-0.5 -mb-0.5 left-1 p-3 pb-0 relative">
-                <div className="text-xs tracking-[0.4px]">{p.sku}</div>
+                <div className="text-xs tracking-[0.4px] flex justify-center w-full">{p.sku}</div>
                 <div className="mt-3">
-                  <Button className="w-full" onClick={() => handleBuyNow(p)}>
+                  <Button className="w-full h-8 text-xs" onClick={() => handleBuyNow(p)}>
                     Buy Now
                   </Button>
                 </div>
@@ -791,7 +806,7 @@ export default function Catalog() {
 
   const LeftCategoriesGrid = (
     <div className="h-full">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Gem className="h-5 w-5 text-primary" />
           <h2 className="font-brand text-2xl md:text-3xl">Categories</h2>
@@ -937,7 +952,7 @@ export default function Catalog() {
               <img
                 src="/crystova.png"
                 alt="CRYSTOVA"
-                className="h-12 md:h-32 w-auto max-w-[380px]"
+                className="h-12 md:h-32 w-auto max-w-[400px]"
               />
             </div>
           </div>
@@ -1099,6 +1114,26 @@ export default function Catalog() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [view, flipping, linearPage, singleMode]);
+
+  // Update products per page on mount and window resize
+  useEffect(() => {
+    updateProductsPerPage();
+    
+    const handleResize = () => {
+      updateProductsPerPage();
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Update total pages when productsPerPage changes
+  useEffect(() => {
+    if (products.length > 0) {
+      setTotalPages(Math.ceil(products.length / productsPerPage));
+      setCurrentPage(1); // Reset to first page when products per page changes
+    }
+  }, [productsPerPage, products.length]);
 
   // Fetch categories on component mount
   useEffect(() => {

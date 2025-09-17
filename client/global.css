@@ -169,6 +169,26 @@
   }
 }
 
+@media (min-width: 1710px) and (max-width: 1999px) {
+  /* Increase page height and width for this specific range */
+  .catalog-container {
+    --page-h: clamp(700px, 80vh, 1100px) !important;
+    --page-h-mobile: clamp(500px, 75vh, 900px) !important;
+    max-width: 1500px !important;
+  }
+  
+  .catalog-page {
+    width: 1300px !important;
+    max-width: 90vw !important;
+  }
+  
+  /* Increase category name font size */
+  .categories-grid .inline-flex {
+    font-size: 15px !important;
+    padding: 0.5rem 1rem !important;
+  }
+}
+
 /* Medium-large screen optimizations for screens 2000px - 2200px */
 @media (min-width: 2000px) and (max-width: 2200px) {
   /* Increase page height and width for this specific range */
@@ -248,10 +268,10 @@
     padding: 0.5rem 1rem;
   }
   
-  /* Product grid - 4 per row */
+  /* Product grid - 2 per row */
   .product-grid-large {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    grid-template-rows: repeat(auto, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, 1fr);
     gap: 1.5rem;
   }
   
@@ -269,7 +289,7 @@
   }
   
   .product-grid-large {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: repeat(2, 1fr);
     gap: 0.75rem;
   }
@@ -279,6 +299,28 @@
 @media (min-width: 1200px) and (max-width: 1999px) {
   .more_con {
     display: none;
+  }
+}
+
+/* Dynamic product grid layouts based on screen size */
+@media (max-width: 425px) {
+  .product-grid-large {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-rows: repeat(2, 1fr) !important;
+  }
+}
+
+@media (min-width: 426px) and (max-width: 767px) {
+  .product-grid-large {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-rows: repeat(2, 1fr) !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .product-grid-large {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    grid-template-rows: repeat(2, 1fr) !important;
   }
 }
 
