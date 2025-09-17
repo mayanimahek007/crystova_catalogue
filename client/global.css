@@ -1,4 +1,3 @@
-/** @import must precede all other statements */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&display=swap");
 
@@ -129,5 +128,29 @@
       Times,
       serif;
     letter-spacing: 0.01em;
+  }
+}
+
+/* Custom responsive rule: for screens between 407px and 767px increase page image height */
+@media (min-width: 407px) and (max-width: 550px) {
+  .page-img-range {
+    height: 12rem; /* 48 */
+  }
+}
+
+@media (min-width: 551px) and (max-width: 767px) {
+  .page-img-range {
+    height: 18rem; /* 72 */
+  }
+}
+
+@media (min-width: 768px) and (max-width: 865px) {
+  .page2-heading {
+    font-size: 0.95rem; /* slightly smaller than md:text-lg */
+    line-height: 1.15;
+  }
+  .page2-content {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
   }
 }

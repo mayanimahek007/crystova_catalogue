@@ -395,23 +395,23 @@ export default function Catalog() {
   );
 
   const RightWelcome = (
-    <div className="flex h-full flex-col justify-center text-left select-none px-8 max-[991px]:px-0">
-      <div className="mb-6">
+    <div className="flex h-full flex-col justify-center text-left select-none px-4 md:px-8 max-[348px]:px-2">
+      <div className="mb-3 md:mb-6">
         <div className="flex justify-center items-center gap-2 mb-2">
           <img
             src="/crystova.png"
             alt="CRYSTOVA"
-            style={{ height: "50px", width: "auto", maxWidth: "300px" }}
+            className="h-12 md:h-12 max-[991px]:h-10 max-[348px]:h-8 w-auto max-w-[300px]"
           />
         </div>
       </div>
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold text-gray-800 uppercase tracking-wide">
+      <div className="mb-3 md:mb-6">
+        <h2 className="page2-heading text-base md:text-lg max-[348px]:text-sm font-semibold text-gray-800 uppercase tracking-wide">
           WORLD'S LARGEST GROWER OF CVD LAB GROWN DIAMONDS
         </h2>
       </div>
-      <div className="mb-6">
-        <p className="text-sm text-gray-700 leading-relaxed">
+      <div className="mb-3 md:mb-6">
+        <p className="text-xs md:text-sm max-[348px]:text-[11px] text-gray-700 leading-relaxed">
           Welcome to the world of Crystova Jewels, where brilliance meets
           craftsmanship. With a sprawling manufacturing facility spanning over
           7,00,000 sq ft powered by a 25 MW solar plant and over 30+ years of
@@ -421,7 +421,7 @@ export default function Catalog() {
         </p>
       </div>
       <div className="mt-auto">
-        <p className="text-sm text-gray-600 italic">
+        <p className="text-xs md:text-sm max-[348px]:text-[11px] text-gray-600 italic">
           "Crystova Jewels: Crafting timeless elegance with exquisite designs,
           epitomizing beauty and sophistication for those who cherish the finer
           things in life."
@@ -433,11 +433,11 @@ export default function Catalog() {
   // Page 2: split layout (left image, right content)
   const WelcomeSplit = (
     <div className="h-full grid grid-cols-1 md:grid-cols-2 gap-0">
-      <div className="relative min-h-[280px] md:h-full">
+      <div className="relative h-44 md:h-full max-[348px]:h-56 page-img-range">
         <img src="/cate.png" alt="Jewelry" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
         <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-black/0 to-black/0" />
       </div>
-      <div className="h-full flex p-6 md:p-10">
+      <div className="h-full flex p-4 md:p-10 max-[348px]:p-2 page2-content">
         {RightWelcome}
       </div>
     </div>
@@ -896,7 +896,7 @@ export default function Catalog() {
           <img
             src="/3.png"
             alt="Jewelry Background"
-            className="hidden md:block absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover"
             loading="lazy"
           />
         </div>
@@ -1142,6 +1142,7 @@ export default function Catalog() {
           </div>
 
           <div className="relative flex w-[1000px] max-w-[96vw] rounded-2xl ring-1 ring-border shadow-2xl bg-transparent h-[var(--page-h)]">
+            <div className="relative w-full h-full overflow-hidden rounded-2xl">
             {(() => {
               const renderPage =
                 flipping === "single"
@@ -1165,8 +1166,9 @@ export default function Catalog() {
                 onComplete={() => completeFlip(linearJumpTarget !== null ? 0 : (flipDir === "next" ? 1 : -1))}
               />
             )}
+            </div>
 
-            <div className={cn("absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20", linearPage === 1 ? "invisible" : undefined)}>
+            <div className={cn("absolute left-[-20px] md:left-0 top-1/2 -translate-y-1/2 md:-translate-x-1/2 z-20", linearPage === 1 ? "invisible" : undefined)}>
               <ArrowButton
                 direction="left"
                 onClick={startFlipPrev}
@@ -1181,7 +1183,7 @@ export default function Catalog() {
                 linearPage >= totalLinearPages ||
                 (linearPage >= 3 && !selectedCategory)
               }
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20"
+              className="absolute right-[-20px] md:right-0 top-1/2 -translate-y-1/2 md:translate-x-1/2 z-20"
             />
           </div>
         </div>
