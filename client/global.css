@@ -177,6 +177,7 @@
     max-width: 1500px !important;
   }
   
+  
   .catalog-page {
     width: 1300px !important;
     max-width: 90vw !important;
@@ -333,4 +334,24 @@
   .silver-content-large {
     display: block;
   }
+}
+
+
+.category-image-sdsad {
+  @media (max-width: 768px) {
+    height: 9rem;
+  }
+  @media screen and (min-width: 768px) and (max-width: 1500px) {
+    height: 9rem;
+  }
+  @media screen and (min-width: 1500px) and (max-width: 1710px) {
+    height: 10rem;
+  }
+
+  @media screen and (min-width: 1710px) and (max-width: 1900px) {
+    height: 14rem;
+  }
+@media screen and (min-width: 1900px) {
+  height: 18rem;
+}
 }

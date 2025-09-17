@@ -766,7 +766,7 @@ export default function Catalog() {
         <div className="grid gap-3 max-[425px]:grid-cols-2 grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 product-grid-large">
           {getPaginatedProducts(pageOverride).map((p) => (
             <div key={p._id} className="">
-              <div className="relative aspect-square h-34 sm:h-40 md:h-40 lg:h-40 xl:h-40 2xl:h-40 flex w-full justify-center">
+              <div className="relative aspect-square flex w-full justify-center category-image-sdsad">
                 <img
                   src={
                     p.imageUrl
