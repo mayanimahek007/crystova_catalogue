@@ -354,8 +354,8 @@ Please provide more details.`;
   };
 
   const getImagesForLinearPage = (n: number) => {
-    if (n === 1) return ["/3.png", "/crystova.png"];
-    if (n === 2) return ["/cate.png", "/crystova.png"];
+    if (n === 1) return ["/3.webp", "/crystova.webp"];
+    if (n === 2) return ["/cate.webp", "/crystova.webp"];
     if (n === 3) {
       return categories
         .map((c) => (c.imageUrl ? `https://catalogue-api.crystovajewels.com${c.imageUrl}` : ""))
