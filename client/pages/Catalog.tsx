@@ -233,6 +233,12 @@ export default function Catalog() {
   const [totalPages, setTotalPages] = useState(1);
   const [productsPerPage, setProductsPerPage] = useState(8);
   const flipGuard = useRef(false);
+  
+  // Touch gesture state
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const touchEndX = useRef(0);
+  const touchEndY = useRef(0);
 
   // Single-page mode (requested): show one page at a time with page numbers 1..N
   const singleMode = true;
@@ -1158,6 +1164,37 @@ Please provide more details.`;
     return () => window.removeEventListener("keydown", onKey);
   }, [view, flipping, linearPage, singleMode]);
 
+  // Touch gesture handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    touchEndX.current = e.changedTouches[0].clientX;
+    touchEndY.current = e.changedTouches[0].clientY;
+    handleSwipe();
+  };
+
+  const handleSwipe = () => {
+    const deltaX = touchEndX.current - touchStartX.current;
+    const deltaY = touchEndY.current - touchStartY.current;
+    
+    // Minimum swipe distance (in pixels)
+    const minSwipeDistance = 50;
+    
+    // Check if it's a horizontal swipe (not vertical)
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+      if (deltaX > 0) {
+        // Swipe right - go to previous page
+        startFlipPrev();
+      } else {
+        // Swipe left - go to next page
+        startFlipNext();
+      }
+    }
+  };
+
   // Update products per page on mount and window resize
   useEffect(() => {
     updateProductsPerPage();
@@ -1230,7 +1267,12 @@ Please provide more details.`;
             <div className="absolute bottom-20 right-10 h-48 w-48 rounded-full bg-rose-300/40" />
           </div>
 
-          <div className="relative flex w-[1000px] max-w-[96vw] rounded-2xl ring-1 ring-border shadow-2xl bg-transparent h-[var(--page-h)] catalog-page" style={{ maxWidth: "min(96vw, 1400px)" }}>
+          <div 
+            className="relative flex w-[1000px] max-w-[96vw] rounded-2xl ring-1 ring-border shadow-2xl bg-transparent h-[var(--page-h)] catalog-page" 
+            style={{ maxWidth: "min(96vw, 1400px)" }}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
             <div className="relative w-full h-full overflow-hidden rounded-2xl">
             {(() => {
               const renderPage =
